@@ -1,0 +1,21 @@
+name: adminmode
+permission: easystaff.modes.admin
+weight: 2
+gamemode: creative
+invulnerable: true
+pvp: true
+block-place: true
+block-break: true
+item-pickup: true
+item-drop: true
+silent-chest: true
+inventory: true
+enable-commands: []
+disable-commands: []
+vanished: true
+chat: true
+flight: true
+items:
+  compass: 1
+  freeze: 2
+  vanish: 3

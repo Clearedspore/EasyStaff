@@ -1,0 +1,94 @@
+plugins {
+    id("java-library")
+    id("io.github.goooler.shadow") version "8.1.8"
+}
+
+group = 'me.clearedspore'
+version = '1.0'
+
+repositories {
+    maven { url = "https://repo.aikar.co/content/groups/aikar/" }
+    maven{ url = "https://jitpack.io"}
+    maven {
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        name = "gravemc-repo"
+        url = "https://repo.gravemc.net/releases/"
+    }
+    maven {
+        name = "dmulloy2-repo"
+        url = "https://repo.dmulloy2.net/repository/public/"
+    }
+    maven {
+        url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
+
+    implementation 'org.yaml:snakeyaml:2.0'
+
+    implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT") {
+        exclude group: 'com.google.code.gson'
+        exclude group: 'org.yaml', module: 'snakeyaml'
+    }
+    compileOnly 'net.luckperms:api:5.4'
+    compileOnly 'me.clip:placeholderapi:2.11.6'
+    compileOnly 'com.github.NEZNAMY:TAB-API:5.2.0'
+    compileOnly(files("libs/EasyAPI-1.0.jar"))
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
+
+    implementation("club.minnced:discord-webhooks:0.8.4")
+    implementation("net.dv8tion:JDA:5.5.1")
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+tasks {
+    shadowJar {
+        relocate("co.aikar.commands", "me.clearedspore.easyCore.shaded.acf")
+        relocate("co.aikar.locales", "me.clearedspore.easyCore.shaded.acf.locales")
+
+        manifest {
+            attributes(
+                    'Implementation-Title': project.name,
+                    'Implementation-Version': project.version
+            )
+        }
+
+        archiveFileName = "${project.name}-${project.version}.jar"
+    }
+
+    build {
+        dependsOn shadowJar
+    }
+}
+
+def targetJavaVersion = 21
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release.set(targetJavaVersion)
+    }
+}
+
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}

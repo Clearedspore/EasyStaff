@@ -1,0 +1,60 @@
+# Want to filter words? Or even punish players?
+# Add them in here
+
+# If you want to have the filter enabled
+enabled: true
+
+# Placeholders:
+# %player% -> Player that said something bad
+# %word% -> Word that got flagged
+# %message% -> full message
+
+fuck:
+  variations:
+    - "f*ck"
+    - "f1ck"
+    - "fk"
+  # If you want to punish the player for saying it
+  punishment:
+    enabled: false
+    # Punishment command
+    command:
+      - warn %player% Bad word
+    # If the word will get replaced and with what
+  replacement:
+    enabled: true
+    replace: "****"
+    # if you want to cancel the message
+  cancel:
+    enabled: false
+    message:
+      - "&cYou cannot say that!"
+      - "&cIf you say that again you will be punished!"
+  notify-staff:
+    enabled: false
+    message:
+      - "&b[Staff] &f%player% &bhas flagged the filter for saying &e'%word%'"
+      - "&bMessage: &e%message%"
+
+niger:
+  variations:
+    - "nigga"
+    - "nogga"
+    - "nigger"
+  punishment:
+    enabled: true
+    command:
+      - punish %player% Discrimination
+  replacement:
+    enabled: false
+    replace: "****"
+  cancel:
+    enabled: true
+    message:
+      - "&cYou have been punished for saying something against our guidelines!"
+  notify-staff:
+    enabled: true
+    message:
+      - "&b[Staff] &f%player% &bhas been punished for flagging the filter for saying &e'%word%'"
+
+

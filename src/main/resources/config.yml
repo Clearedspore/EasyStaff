@@ -1,0 +1,170 @@
+# EasyStaff Configuration
+# You can use color codes such as &7 or &f or even RGB
+# Make sure to check the wiki for more info
+# ->  <-
+
+discord:
+  # Enable Discord integration
+  enabled: false
+  
+  # Discord webhook URLs for different notifications
+  webhooks:
+    # Webhook for punishment notifications (ban, mute, warn, kick)
+    punishments: ""
+    # Webhook for reports
+    reports: ""
+    # Webhook for chat channels (optional)
+    # Staff chat and admin chat etc.
+    chat: ""
+    # Webhook URL for linking accounts
+    linking: ""
+
+  # Automatically ping the staff member who issued the punishment
+  ping-issuer: true
+  
+  # Messages
+  messages:
+    # Message when a staff member needs to link their Discord account
+    link-required: "&c[Discord] &fYou need to link your Discord account to use this feature. Use &b/staff-link&f to link your account."
+    # Message when a staff member successfully links their Discord account
+    link-success: "&a[Discord] &fYour Discord account has been successfully linked!"
+    # Message when a staff member unlinks their Discord account
+    unlink-success: "&a[Discord] &fYour Discord account has been unlinked."
+
+punishments:
+  # If you can remove your own punishment.
+  remove-own: false
+  # Players that will be exempt when punishing someone
+  exempt-players:
+    - billy_bob_123
+    - Notch_Fan_5
+
+  # When punishing someone the player gets a message saying that they have to provide evidence
+  evidence-required: true
+
+  # Blocked commands if you are muted
+  blocked-cmds:
+    - whisper
+    - msg
+    - emsg
+    - ewhisper
+    - pm
+    - shout
+    - me
+
+# If you want to use the plugins teleport feature
+# The reason for this option is that you could already have a plugin that uses an advanced
+# version and don't want to use this plugins feature
+advanced-tp: true
+
+maintenance:
+  # If maintenance is enabled
+  enabled: false
+  # Players that can join while maintenance being enabled
+  exempt:
+    - Notch
+    - billy_bob_123
+  # The message that you get if you join while maintenance being enabled.
+  # This will also be used for the hover text in the server list
+  message:
+    - "&cMaintenance!"
+    - ""
+    - "&fMaintenance has been enabled please be patient while we resolve the issues"
+    - "&fJoin our discord for updates: &bdiscord.gg/"
+  # Motd the server will set when maintenance is enabled
+  motd:
+    enabled: true
+    text:
+      - "&c&lMaintenance!"
+      - "&fCheck out the discord for more info!"
+    # This will the plugin do by itself (can be ignored)
+    default: []
+  # Server ping settings for maintenance mode
+  server-ping:
+    # Text to display in the player count during maintenance
+    # This will override the normal player count text
+    text: "&c&lMaintenance"
+
+alerts:
+
+  # If the alt alerts will be enabled
+  alt-alert: true
+  # Placeholders:
+  # %player% player that got detected with an alt
+  # %button% button to run /alts (player)
+  alt-message: "&b[Staff] &f%player% &b has been detected with an alt! %button%"
+
+  # If the player client name alert is enabled
+  client-alert: true
+  # Placeholders:
+  # %player% player that joined
+  # %client% The client name of the player
+  client-message: "&b[Staff] &f%player% &b has joined using &f%client%"
+
+  # If the xray alerts is enabled
+  xray-alert: true
+  # Placeholders:
+  # %player% player that found the blocks
+  # %blocks% block that the player mined
+  # %amount% vein amount
+  xray-message: "&b[Staff X-ray] &f%player% &b has found &e%amount% &a%blocks%"
+  # Blocks to monitor for potential x-ray
+  monitored-blocks:
+    - DIAMOND_ORE
+    - DEEPSLATE_DIAMOND_ORE
+    - ANCIENT_DEBRIS
+    - EMERALD_ORE
+    - DEEPSLATE_EMERALD_ORE
+  # Maximum distance to check for connected blocks in a vein
+  vein-detection-radius: 5
+
+blocked-names:
+  - "Notch"
+  - "fucking_cool"
+
+vanish:
+  # If you want to use the TAB plugin or not
+  tab: true
+  # Tag the player will get when they vanish!
+  tag: " &f[&b&lV&f]"
+  leave: "&e%player% left the game"
+  join: "&e%player% joined the game"
+
+report:
+  # If you only want to use the reasons provided
+  # Set this to false if you want the player to be able to use a custom reason
+  default-reason: true
+  # Reasons whenever you report someone
+  reasons:
+    - Discrimination
+    - Advertising
+    - Bug Abuse
+    - Staff Disrespect
+    - Harmful jokes
+    - Inappropriate jokes
+  # When a staff member accepts/denies the report
+  # they will have to choose between these reasons.
+  finished-reasons:
+    - Resolved
+    - Punished
+    - Not Enough
+    - No Evidence
+  # Commands that will be run when a staff member accepts the report Or denies (option below).
+  # No need to do /report accept in here. These are commands apart from the system.
+  # You could reward the staff member or send them a message, or you could do /punish %suspect% to open the punish menu (already in the example).
+  # Placeholders:
+  # %Staff% -> Staff member that handled the report.
+  # %suspect% -> Player that got reported.
+  # %issuer% -> player that made the report.
+  #
+  # Make sure at the start of the command to do %player% or %console% and the / in the command
+  # %player% means that the staff member will run the command and %console% means that console will run the command
+  accepted-commands:
+    - "%player%/punish %suspect%"
+  denied-commands: []
+  # Messages that will be sent to the reporter.
+  # %reason% -> report reason given by the staff member
+  player-message:
+    - "&aYour report has been handled."
+    - "&aThank you for making a report and keeping the server safe!"
+    - "&aReason&f: %reason%"

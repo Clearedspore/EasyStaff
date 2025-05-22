@@ -1,0 +1,57 @@
+package me.clearedspore.feature.punishment.menu.history.item;
+
+import me.clearedspore.easyAPI.menu.Item;
+import me.clearedspore.easyAPI.util.CC;
+import me.clearedspore.feature.punishment.PunishmentManager;
+import me.clearedspore.feature.punishment.menu.history.HistoryMenu;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MenuItem extends Item {
+
+    private final JavaPlugin plugin;
+    private final Player viewer;
+    private final OfflinePlayer target;
+    private final PunishmentManager punishmentManager;
+
+    public MenuItem(JavaPlugin plugin, Player viewer, OfflinePlayer target, PunishmentManager punishmentManager) {
+        this.plugin = plugin;
+        this.viewer = viewer;
+        this.target = target;
+        this.punishmentManager = punishmentManager;
+    }
+
+
+    @Override
+    public ItemStack createItem() {
+        ItemStack item = new ItemStack(Material.BARRIER);
+        ItemMeta meta = item.getItemMeta();
+
+        meta.setDisplayName(CC.sendBlue("Go back"));
+        List<String> lore = new ArrayList<>();
+
+        lore.add("");
+        lore.add(CC.send("&f-----------------"));
+        lore.add(CC.sendWhite("Click to go back"));
+        lore.add(CC.send("&f-----------------"));
+
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+
+
+        return item;
+    }
+
+    @Override
+    public void onClickEvent(Player player, ClickType clickType) {
+        new HistoryMenu(plugin, target, viewer, punishmentManager).open(player);
+    }
+}

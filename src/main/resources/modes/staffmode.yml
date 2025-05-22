@@ -1,0 +1,23 @@
+name: staffmode
+permission: easystaff.modes.staff
+weight: 1
+gamemode: survival
+invulnerable: true
+pvp: false
+block-place: false
+block-break: false
+item-pickup: false
+item-drop: false
+silent-chest: true
+inventory: false
+enable-commands: []
+disable-commands: []
+vanished: true
+chat: true
+flight: true
+items:
+  compass: 1
+  freeze: 2
+  vanish: 3
+  worldedit: 4
+

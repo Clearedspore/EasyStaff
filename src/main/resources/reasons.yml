@@ -1,0 +1,171 @@
+# Placeholders:
+# - %reason% -> The reason
+# - %time_left% -> The time left until the punishment expires. (will not work for kicks and warns)
+# - %id% -> Punishment ID
+
+# These are the screens/messages that you get when you get punished
+bans:
+  - "&cYou have been banned!"
+  - ""
+  - "&fReason: &e%reason%"
+  - "&fExpires in: &e%time_left%"
+  - ""
+  - "&fIf you believe this is a mistake you can open a ticket in our discord."
+  - "&fAppeal at &bdiscord.gg/"
+  - "&fPunishment ID: &e%id%"
+warns:
+  - "&c================================"
+  - ""
+  - "&cYou have been warned!"
+  - ""
+  - "&fReason: &e%reason%"
+  - ""
+  - "&fAppeal at &bdiscord.gg/"
+  - "&fPunishment ID: &e%id%"
+  - "&c================================"
+mutes:
+  - "&c================================"
+  - ""
+  - "&cYou have been muted!"
+  - ""
+  - "&fReason: &e%reason%"
+  - "&fExpires in: &e%time_left%"
+  - ""
+  - "&fAppeal at &bdiscord.gg/"
+  - "&fPunishment ID: &e%id%"
+  - "&c================================"
+kicks:
+  - ""
+  - "&cYou have been kicked!"
+  - ""
+  - "&fReason: &e%reason%"
+  - ""
+  - "&fAppeal at &bdiscord.gg/"
+  - "&fPunishment ID: &e%id%"
+blocked-name:
+  - "&cYou have a name that is blocked!"
+  - ""
+  - "&fYour minecraft name has been blocked from this minecraft server"
+  - "&fYou may join again once your name has been changed!"
+  - ""
+  - "&fCurrent Name: &e%name%"
+  - ""
+  - "&fJoin our discord server if you believe this is a mistake"
+  - "&bDiscord.gg/"
+
+# When someone gets banned it will send these messages
+# If you do -s in your ban command it will not be sent!
+# Placeholders:
+# %player% -> player that got banned
+# %reason% -> ban reason
+# %issuer% -> User that punished the player
+punishmentnotify:
+  enabled: true
+  text:
+    - "&c&lSaftey!"
+    - "&bA player just got punished!"
+    - "&bMake sure to use /report to keep the server safe!"
+
+# Offenses used by the /punish or /p command
+# How to make a new reason?
+# First lets get the reason we want I will use Discrimination
+# Discrimination:
+#
+# Now lets get the first offence witch is a 7 day mute
+# Discrimination:
+#   1:
+#     type: MUTE
+#     duration: 7d
+#
+# For the second offense I want to use a custom reason and it will be a 14 day mute
+# Discrimination:
+#   1:
+#     type: MUTE
+#     duration: 7d
+#   2:
+#     type: MUTE
+#     duration: 14d
+#     reason: "Discrimination (second offense)"
+#
+# And that is how you make your own reason with offenses. Make sure to check the wiki for way more info.
+
+# Want to use spaces in your reason? for example Advertising (scam) do it like this
+# Advertising_scam:
+#   1:
+#     type: MUTE
+#     duration: 7d
+#     reason: "Advertising (scam)"
+
+offenses:
+    Cheating:
+      1:
+        type: WARN
+      2:
+        type: BAN
+        duration: 7d
+        reason: "Cheating (2nd offense)"
+      3:
+        type: BAN
+        duration: 14d
+        reason: "Cheating (3rd offense)"
+      final:
+        type: BAN
+        duration: 30d
+        reason: "Cheating (Final warning)"
+    Toxicity:
+      1:
+        type: WARN
+      2:
+        type: MUTE
+        duration: 1h
+        reason: "Toxicity (2nd offense)"
+      3:
+        type: MUTE
+        duration: 12h
+        reason: "Toxicity (3rd offense)"
+      4:
+        type: MUTE
+        duration: 1d
+        reason: "Toxicity (4th offense)"
+      5:
+        type: MUTE
+        duration: 1d
+        reason: "Toxicity (5th offense)"
+      final:
+        type: MUTE
+        duration: 7d
+        reason: "Toxicity (Final warning)"
+    Advertising:
+      1:
+        type: WARN
+      2:
+        type: MUTE
+        duration: 1d
+      3:
+        type: BAN
+        duration: 3d
+      final:
+        type: BAN
+        duration: permanent
+    Discrimination:
+      1:
+        type: MUTE
+        duration: 7d
+      2:
+        type: MUTE
+        duration: 14d
+      3:
+        type: MUTE
+        duration: 30d
+      4:
+        type: MUTE
+        duration: 60d
+      5:
+        type: MUTE
+        duration: 120d
+      6:
+        type: MUTE
+        duration: 1y
+      7:
+        type: mute
+        duration: permanent

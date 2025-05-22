@@ -1,0 +1,26 @@
+# EasyStaff Chat Channels Configuration
+# You can define custom chat channels here
+
+# Example channel configuration:
+# commands: all the commands to toggle the channel
+# name: the channel name
+# prefix: the prefix in chat
+# discord-id: webhook ID to connect the chat with a discord webhook (optional)
+# permission: permission to toggle the channel
+
+staffchat:
+  commands:
+    - staffchat
+    - sc
+  name: "&9Staff"
+  prefix: "&9[Staff] &f"
+  discord-id: "your_url"
+  permission: "easystaff.chat.staff"
+
+adminchat:
+  commands:
+    - adminchat
+    - ac
+  name: "&cAdmin"
+  prefix: "&c[Admin] &f"
+  permission: "easystaff.chat.admin"
