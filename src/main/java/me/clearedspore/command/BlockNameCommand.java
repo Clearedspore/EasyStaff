@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.alertManager.Alert;
 import me.clearedspore.feature.alertManager.AlertManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,11 +15,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.BatchUpdateException;
-import java.util.ArrayList;
 import java.util.List;
 
-@CommandPermission(PS.block_name)
+@CommandPermission(P.block_name)
 @CommandAlias("blockname|removename|badname|banname")
 public class BlockNameCommand extends BaseCommand implements Listener {
 
@@ -76,7 +74,7 @@ public class BlockNameCommand extends BaseCommand implements Listener {
 
     @Subcommand("remove")
     @CommandCompletion("@blockedNames")
-    @CommandPermission(PS.remove_blocked_name)
+    @CommandPermission(P.remove_blocked_name)
     @Syntax("<name>")
     public void onBlockedNameRemove(CommandSender player, String name) {
         FileConfiguration config = plugin.getConfig();
@@ -97,14 +95,14 @@ public class BlockNameCommand extends BaseCommand implements Listener {
 
     private void notifyPlayers(CommandSender player, String name, String action) {
         for (Player players : Bukkit.getOnlinePlayers()) {
-            if (players.hasPermission(PS.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+            if (players.hasPermission(P.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                 players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEhas " + action + " the name &f" + name));
             }
         }
     }
 
     @Subcommand("list")
-    @CommandPermission(PS.blocked_name_list)
+    @CommandPermission(P.blocked_name_list)
     public void onBlockedNameList(CommandSender player){
         FileConfiguration config = plugin.getConfig();
         List<String> blockedNameList = config.getStringList("blocked-names");
@@ -115,14 +113,14 @@ public class BlockNameCommand extends BaseCommand implements Listener {
     }
 
     @EventHandler
-    public void onPlayerLogin(PlayerLoginEvent event){
+    public void onPlayerLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
         FileConfiguration config = plugin.getConfig();
         List<String> blockedNameList = config.getStringList("blocked-names");
 
-        if(blockedNameList.contains(player.getName())){
+        if (blockedNameList.stream().map(String::toLowerCase).anyMatch(player.getName().toLowerCase()::equals)) {
             List<String> reason = reasonsConfig.getStringList("blocked-name");
-            if(reason.isEmpty()) {
+            if (reason.isEmpty()) {
                 reason.add("&cYou have a name that is blocked!");
                 reason.add("");
                 reason.add("&fYour minecraft name has been blocked from this minecraft server");
@@ -133,7 +131,7 @@ public class BlockNameCommand extends BaseCommand implements Listener {
                 reason.add("&fJoin our discord server if you believe this is a mistake");
                 reason.add("&bDiscord.gg/");
             }
-            for(String message : reason){
+            for (String message : reason) {
                 message.replace("%name%", player.getName());
                 String formattedReason = String.join("\n", reason);
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, CC.translate(formattedReason));

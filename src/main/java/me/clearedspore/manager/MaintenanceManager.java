@@ -3,7 +3,7 @@ package me.clearedspore.manager;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.setting.SettingsManager;
 import me.clearedspore.storage.PlayerData;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import me.clearedspore.util.ServerPingManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -103,7 +103,7 @@ public class MaintenanceManager implements Listener {
 
                 players.kickPlayer(CC.send(formattedMessage));
             }
-                if(SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(PS.maintenance_logs)) {
+                if(SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(P.maintenance_logs)) {
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEhas kicked everyone that wasn't on the maintenance list"));
                 }
         }
@@ -177,7 +177,7 @@ public class MaintenanceManager implements Listener {
                 @Override
                 public void run() {
                     for (Player players : Bukkit.getOnlinePlayers()) {
-                        if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(PS.maintenance_logs)) {
+                        if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(P.maintenance_logs)) {
                             players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEhas tried to join while maintenance being enabled!"));
                         }
                     }
@@ -188,7 +188,7 @@ public class MaintenanceManager implements Listener {
                 @Override
                 public void run() {
                     for (Player players : Bukkit.getOnlinePlayers()) {
-                        if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(PS.maintenance_logs)) {
+                        if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(P.maintenance_logs)) {
                             players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEhas joined while maintenance being enabled!"));
                         }
                     }

@@ -5,10 +5,9 @@ import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.punishment.Punishment;
 import me.clearedspore.feature.punishment.PunishmentManager;
 import me.clearedspore.feature.punishment.menu.history.item.MenuItem;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -67,12 +66,12 @@ public class KickHistoryMenu extends PaginatedMenu {
                 meta.setDisplayName(CC.sendBlue("Kick: " + punishments.ID()));
                 List<String> lore = new ArrayList<>();
                 lore.add("");
-                
+
                 boolean isPunishmentHidden = punishmentManager.getHiddenPunishmentManager().isPunishmentHidden(target, punishments.ID());
-                boolean canSeeDetails = (!viewer.hasPermission(PS.punishments_hide) || target.getUniqueId().equals(viewer.getUniqueId())) && !isPunishmentHidden;
-                
-                if (canSeeDetails) {
-                    if (viewer.hasPermission(PS.punish_staff)) {
+                boolean haspermission = viewer.hasPermission(P.punishments_hide);
+
+                if (!isPunishmentHidden || haspermission) {
+                    if (viewer.hasPermission(P.punish_staff)) {
                         String issuerName = (punishments.issuer() != null) ? punishments.issuer().getName() : "CONSOLE";
                         lore.add(CC.sendWhite("Issuer: &e" + issuerName));
                     }
@@ -80,17 +79,19 @@ public class KickHistoryMenu extends PaginatedMenu {
                     lore.add(CC.sendWhite("Punished on &e" + punishments.getFormattedCreationDate()));
                     
                     FileConfiguration playerConfig = punishmentManager.getPlayerData().getPlayerConfig(target);
-                    if (playerConfig != null && playerConfig.contains("punishments.kicks." + punishments.ID() + ".offenseCount") && viewer.hasPermission(PS.punish_staff)) {
+                    if (playerConfig != null && playerConfig.contains("punishments.kicks." + punishments.ID() + ".offenseCount") && viewer.hasPermission(P.punish_staff)) {
                         int offenseCount = playerConfig.getInt("punishments.kicks." + punishments.ID() + ".offenseCount");
                         lore.add(CC.sendWhite("Offense: &e#" + (offenseCount)));
                     }
-                } else {
+                } else if(isPunishmentHidden && !haspermission){
+                    lore.add(CC.sendRed("This punishment is hidden"));
+                    lore.add("");
                     lore.add(CC.sendWhite("Issuer: &e?"));
                     lore.add(CC.sendWhite("Reason: &e?"));
                     lore.add(CC.sendWhite("Punished on &e?"));
                 }
 
-                if (viewer.hasPermission(PS.punishments_hide)) {
+                if (viewer.hasPermission(P.punishments_hide)) {
                     lore.add("");
                     if (isPunishmentHidden) {
                         lore.add(CC.sendRed("» Right-click to show this punishment"));
@@ -110,7 +111,7 @@ public class KickHistoryMenu extends PaginatedMenu {
 
     @Override
     protected void onInventoryClickEvent(Player player, ClickType clickType, InventoryClickEvent event) {
-        if (!player.hasPermission(PS.punishments_hide)) {
+        if (!player.hasPermission(P.punishments_hide)) {
             return;
         }
         

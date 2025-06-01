@@ -5,10 +5,10 @@ import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.alertManager.Alert;
 import me.clearedspore.feature.alertManager.AlertManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.entity.Player;
 
-@CommandPermission(PS.alerts)
+@CommandPermission(P.alerts)
 @CommandAlias("alerts|togglealerts|staff-alerts")
 public class AlertsCommand extends BaseCommand {
 
@@ -63,7 +63,7 @@ public class AlertsCommand extends BaseCommand {
     }
     
     @Subcommand("reload")
-    @CommandPermission(PS.admin)
+    @CommandPermission(P.admin)
     private void onAlertReload(Player player) {
         alertManager.initializeAlerts(player);
         player.sendMessage(CC.sendBlue("Your alerts have been reloaded based on your permissions."));

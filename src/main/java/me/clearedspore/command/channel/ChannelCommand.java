@@ -5,12 +5,12 @@ import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.channels.Channel;
 import me.clearedspore.feature.channels.ChannelManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.entity.Player;
 
 
 @CommandAlias("channel")
-@CommandPermission(PS.channel)
+@CommandPermission(P.channel)
 public class ChannelCommand extends BaseCommand {
 
     private final ChannelManager channelManager;
@@ -22,7 +22,7 @@ public class ChannelCommand extends BaseCommand {
 
 
     @Subcommand("list")
-    @CommandPermission(PS.channel_list)
+    @CommandPermission(P.channel_list)
     public void onList(Player player) {
         player.sendMessage(CC.sendBlue("Available channels:"));
         
@@ -55,7 +55,7 @@ public class ChannelCommand extends BaseCommand {
 
 
     @Subcommand("reload")
-    @CommandPermission(PS.channel_reload)
+    @CommandPermission(P.channel_reload)
     public void onReload(Player player) {
         channelManager.reloadChannels();
         player.sendMessage(CC.sendBlue("Channels configuration reloaded."));

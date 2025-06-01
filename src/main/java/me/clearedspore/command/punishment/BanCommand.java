@@ -4,12 +4,12 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.punishment.PunishmentManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
-@CommandPermission(PS.ban)
+@CommandPermission(P.ban)
 @CommandAlias("ban")
 public class BanCommand extends BaseCommand {
 
@@ -39,14 +39,14 @@ public class BanCommand extends BaseCommand {
 
         for (String part : args) {
             if ("-s".equalsIgnoreCase(part)) {
-                if (player.hasPermission(PS.silent)) {
+                if (player.hasPermission(P.silent)) {
                     silent = true;
                 } else {
                     player.sendMessage(CC.send("&cYou don't have permission to use the silent flag."));
                     return;
                 }
             } else if ("-hs".equalsIgnoreCase(part)) {
-                if (player.hasPermission(PS.high_silent)) {
+                if (player.hasPermission(P.high_silent)) {
                     hideStaffMessage = true;
                 } else {
                     player.sendMessage(CC.send("&cYou don't have permission to use the high silent flag."));

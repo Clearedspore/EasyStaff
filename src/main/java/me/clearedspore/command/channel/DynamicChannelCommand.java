@@ -6,10 +6,7 @@ import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.easyAPI.util.StringUtil;
 import me.clearedspore.feature.channels.Channel;
 import me.clearedspore.feature.channels.ChannelManager;
-import me.clearedspore.util.PS;
 import org.bukkit.entity.Player;
-
-import java.util.Locale;
 
 public class DynamicChannelCommand extends BaseCommand {
 

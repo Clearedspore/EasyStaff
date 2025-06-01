@@ -4,12 +4,12 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.staffmode.VanishManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("vanish|v")
-@CommandPermission(PS.vanish)
+@CommandPermission(P.vanish)
 public class VanishCommand extends BaseCommand {
 
     private final VanishManager vanishManager;
@@ -28,13 +28,13 @@ public class VanishCommand extends BaseCommand {
             vanishManager.toggleVanished(player);
             player.sendMessage(CC.sendBlue("You have " + (!isvanished ? "&aEnabled" : "&cDisabled") + "&#00CCDE vanish"));
             for (Player players : Bukkit.getOnlinePlayers()){
-                if(players.hasPermission(PS.notify) && !players.equals(player)){
+                if(players.hasPermission(P.notify) && !players.equals(player)){
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + "&#00CCDE " + (!isvanished ? "&aEnabled" : "&cDisabled") + " &#00CCDEvanish "));
                 }
             }
         } else {
 
-            if(!player.hasPermission(PS.vanish_others)){
+            if(!player.hasPermission(P.vanish_others)){
                 player.sendMessage(CC.sendRed("You don't have permission to toggle other players their vanish"));
                 return;
             }
@@ -45,7 +45,7 @@ public class VanishCommand extends BaseCommand {
             vanishManager.toggleVanished(target);
             player.sendMessage(CC.sendBlue("You have " + (!isvanished ? "&aEnabled" : "&cDisabled") + "&#00CCDE vanish for &f" + targetName));
             for (Player players : Bukkit.getOnlinePlayers()){
-                if(players.hasPermission(PS.notify) && !players.equals(player)){
+                if(players.hasPermission(P.notify) && !players.equals(player)){
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + "&#00CCDE " + (!isvanished ? "&aEnabled" : "&cDisabled") + " &#00CCDEvanish for &f" + targetName));
                 }
             }

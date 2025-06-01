@@ -31,7 +31,7 @@ public class KickItem extends Item {
 
     @Override
     public ItemStack createItem() {
-        ItemStack item = new ItemStack(Material.YELLOW_WOOL);
+        ItemStack item = new ItemStack(Material.SHIELD);
         ItemMeta meta = item.getItemMeta();
 
         if(punishmentManager.getAllKicks(target).size() > 1){

@@ -31,7 +31,7 @@ public class WarnItem extends Item {
 
     @Override
     public ItemStack createItem() {
-        ItemStack item = new ItemStack(Material.ORANGE_WOOL);
+        ItemStack item = new ItemStack(Material.REDSTONE);
         ItemMeta meta = item.getItemMeta();
 
         if(punishmentManager.getAllWarns(target).size() > 1){

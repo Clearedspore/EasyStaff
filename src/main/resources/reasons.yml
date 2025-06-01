@@ -166,6 +166,6 @@ offenses:
       6:
         type: MUTE
         duration: 1y
-      7:
+      final:
         type: mute
         duration: permanent

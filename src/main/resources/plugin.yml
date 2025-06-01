@@ -1,11 +1,11 @@
 name: EasyStaff
 version: '1.0'
 main: me.clearedspore.EasyStaff
-api-version: '1.21'
+api-version: '1.16'
 authors: [ ClearedSpore ]
 depend: [EasyAPI, ProtocolLib]
 description: "One of the most advanced staff plugins!"
 softdepend:
-  - TAB
   - PlaceholderAPI
   - LuckPerms
+  - TAB

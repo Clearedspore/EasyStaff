@@ -6,10 +6,9 @@ import me.clearedspore.feature.punishment.Punishment;
 import me.clearedspore.feature.punishment.PunishmentManager;
 import me.clearedspore.feature.punishment.menu.history.item.MenuItem;
 import me.clearedspore.feature.punishment.menu.history.warnmenu.RemoveWarnMenu;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -71,10 +70,10 @@ public class WarnHistoryMenu extends PaginatedMenu {
                 lore.add("");
                 
                 boolean isPunishmentHidden = punishmentManager.getHiddenPunishmentManager().isPunishmentHidden(target, punishments.ID());
-                boolean canSeeDetails = (!viewer.hasPermission(PS.punishments_hide) || target.getUniqueId().equals(viewer.getUniqueId())) && !isPunishmentHidden;
-                
-                if (canSeeDetails) {
-                    if (viewer.hasPermission(PS.punish_staff)) {
+                boolean haspermission = viewer.hasPermission(P.punishments_hide);
+
+                if (!isPunishmentHidden || haspermission) {
+                    if (viewer.hasPermission(P.punish_staff)) {
                         String issuerName = (punishments.issuer() != null) ? punishments.issuer().getName() : "CONSOLE";
                         lore.add(CC.sendWhite("Issuer: &e" + issuerName));
                     }
@@ -83,17 +82,17 @@ public class WarnHistoryMenu extends PaginatedMenu {
                     lore.add(CC.sendWhite("Punished on &e" + punishments.getFormattedCreationDate()));
                     
                     FileConfiguration playerConfig = punishmentManager.getPlayerData().getPlayerConfig(target);
-                    if (playerConfig != null && playerConfig.contains("punishments.warns." + punishments.ID() + ".offenseCount") && viewer.hasPermission(PS.punish_staff)) {
+                    if (playerConfig != null && playerConfig.contains("punishments.warns." + punishments.ID() + ".offenseCount") && viewer.hasPermission(P.punish_staff)) {
                         int offenseCount = playerConfig.getInt("punishments.warns." + punishments.ID() + ".offenseCount");
                         lore.add(CC.sendWhite("Offense: &e#" + (offenseCount)));
                     }
 
                     if (active) {
                         lore.add("");
-                        if (viewer.hasPermission(PS.unwarn)) {
+                        if (viewer.hasPermission(P.unwarn)) {
                             if (!target.equals(viewer)) {
                                 lore.add(CC.sendWhite("Click to remove the warning"));
-                            } else if (plugin.getConfig().getBoolean("punishments.remove-own") || viewer.hasPermission(PS.removeown_bypass)) {
+                            } else if (plugin.getConfig().getBoolean("punishments.remove-own") || viewer.hasPermission(P.removeown_bypass)) {
                                 lore.add(CC.sendWhite("Click to remove your own warning"));
                             } else {
                                 lore.add(CC.sendRed("You can't remove your own punishment!"));
@@ -103,12 +102,14 @@ public class WarnHistoryMenu extends PaginatedMenu {
 
                     if (!active) {
                         lore.add(CC.sendWhite(""));
-                        if (viewer.hasPermission(PS.punish_staff)) {
+                        if (viewer.hasPermission(P.punish_staff)) {
                             lore.add(CC.sendWhite("Removal Issuer: &e" + (punishments.removalIssuer() != null ? punishments.removalIssuer().getName() : "Unknown")));
                         }
                         lore.add(CC.sendWhite("Removal Reason: &e" + (punishments.removalReason() != null ? punishments.removalReason() : "Unknown")));
                     }
-                } else {
+                } else if(isPunishmentHidden && !haspermission){
+                    lore.add(CC.sendRed("This punishment is hidden"));
+                    lore.add("");
                     lore.add(CC.sendWhite("Issuer: &e?"));
                     lore.add(CC.sendWhite("Reason: &e?"));
                     lore.add(CC.sendWhite("Active: &e" + active));
@@ -116,10 +117,10 @@ public class WarnHistoryMenu extends PaginatedMenu {
                     
                     if (active) {
                         lore.add("");
-                        if (viewer.hasPermission(PS.unwarn)) {
+                        if (viewer.hasPermission(P.unwarn)) {
                             if (!target.equals(viewer)) {
                                 lore.add(CC.sendWhite("Click to remove the warning"));
-                            } else if (plugin.getConfig().getBoolean("punishments.remove-own") || viewer.hasPermission(PS.removeown_bypass)) {
+                            } else if (plugin.getConfig().getBoolean("punishments.remove-own") || viewer.hasPermission(P.removeown_bypass)) {
                                 lore.add(CC.sendWhite("Click to remove your own warning"));
                             } else {
                                 lore.add(CC.sendRed("You can't remove your own punishment!"));
@@ -134,7 +135,7 @@ public class WarnHistoryMenu extends PaginatedMenu {
                     }
                 }
 
-                if (viewer.hasPermission(PS.punishments_hide)) {
+                if (viewer.hasPermission(P.punishments_hide)) {
                     lore.add("");
                     if (isPunishmentHidden) {
                         lore.add(CC.sendRed("» Right-click to show this punishment"));
@@ -162,7 +163,7 @@ public class WarnHistoryMenu extends PaginatedMenu {
             if (displayName.startsWith(CC.sendBlue("Warn: "))) {
                 String warnID = displayName.substring(displayName.indexOf("Warn: ") + 6).trim();
 
-                if (clickType == ClickType.RIGHT && player.hasPermission(PS.punishments_hide)) {
+                if (clickType == ClickType.RIGHT && player.hasPermission(P.punishments_hide)) {
                     boolean isNowHidden = punishmentManager.getHiddenPunishmentManager().togglePunishmentVisibility(target, warnID);
                     
                     if (isNowHidden) {
@@ -175,9 +176,9 @@ public class WarnHistoryMenu extends PaginatedMenu {
                     return;
                 }
 
-                if (clickType == ClickType.LEFT && player.hasPermission(PS.unwarn)) {
+                if (clickType == ClickType.LEFT && player.hasPermission(P.unwarn)) {
                     if (punishmentManager.isWarnActive(target, warnID)) {
-                        if (!plugin.getConfig().getBoolean("punishments.remove-own") && target.equals(viewer) && !viewer.hasPermission(PS.removeown_bypass)) {
+                        if (!plugin.getConfig().getBoolean("punishments.remove-own") && target.equals(viewer) && !viewer.hasPermission(P.removeown_bypass)) {
                             viewer.sendMessage(CC.sendRed("You cannot remove your own punishment!"));
                             return;
                         }

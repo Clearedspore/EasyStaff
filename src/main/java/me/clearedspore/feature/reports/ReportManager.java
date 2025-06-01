@@ -6,7 +6,7 @@ import me.clearedspore.easyAPI.util.StringUtil;
 import me.clearedspore.feature.alertManager.Alert;
 import me.clearedspore.feature.alertManager.AlertManager;
 import me.clearedspore.feature.discord.DiscordManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -167,7 +167,7 @@ public class ReportManager {
         }
 
         for (Player staff : Bukkit.getOnlinePlayers()) {
-            if (staff.hasPermission(PS.reports_notify) && alertManager.hasAlertEnabled(player, Alert.STAFF)) {
+            if (staff.hasPermission(P.reports_notify) && alertManager.hasAlertEnabled(player, Alert.STAFF)) {
                 TextColor blueColor = TextColor.fromHexString("#00CCDE");
                 Component message = Component.text(CC.sendBlue(""))
                         .color(blueColor)
@@ -223,7 +223,7 @@ public class ReportManager {
         }
 
         for (Player staff : Bukkit.getOnlinePlayers()) {
-            if (staff.hasPermission(PS.reports_notify) && alertManager.hasAlertEnabled(player, Alert.STAFF)) {
+            if (staff.hasPermission(P.reports_notify) && alertManager.hasAlertEnabled(player, Alert.STAFF)) {
                 TextColor blueColor = TextColor.fromHexString("#00CCDE");
                 Component message = Component.text("")
                         .color(blueColor)
@@ -272,7 +272,7 @@ public class ReportManager {
             
             player.sendMessage(CC.sendBlue("You have " + formattedStatus + " the report against &f" + suspect.getName()));
             for (Player players : Bukkit.getOnlinePlayers()){
-                if(players.hasPermission(PS.reports_notify) && alertManager.hasAlertEnabled(player, Alert.STAFF)){
+                if(players.hasPermission(P.reports_notify) && alertManager.hasAlertEnabled(player, Alert.STAFF)){
                     players.sendMessage(CC.send("&f" + player.getName() + " &#00CCDEhas " + formattedStatus + " the report against &f" + suspect.getName()));
                 }
             }

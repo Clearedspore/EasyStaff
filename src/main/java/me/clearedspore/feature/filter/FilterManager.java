@@ -1,14 +1,12 @@
 package me.clearedspore.feature.filter;
 
-import me.clearedspore.EasyStaff;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.easyAPI.util.Logger;
 import me.clearedspore.feature.alertManager.Alert;
 import me.clearedspore.feature.alertManager.AlertManager;
 import me.clearedspore.feature.punishment.PunishmentManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.swing.plaf.SplitPaneUI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,11 +66,11 @@ public class FilterManager implements Listener {
         boolean cancelEnabled = filterConfig.getBoolean(word + ".cancel.enabled");
         boolean notifyStaffEnabled = filterConfig.getBoolean(word + ".notify-staff.enabled");
 
-        return String.format("&cFilter settings for &c%s:\n" +
-                        "&cPunishment: &e%s\n" +
-                        "&cReplacement: &e%s\n" +
-                        "&cCancel: &e%s\n" +
-                        "&cNotify Staff: &e%s",
+        return String.format("&cFilter settings for &b%s:\n" +
+                        "&bPunishment: &e%s\n" +
+                        "&bReplacement: &e%s\n" +
+                        "&bCancel: &e%s\n" +
+                        "&bNotify Staff: &e%s",
                 word,
                 punishmentEnabled ? "yes" : "no",
                 replacementEnabled ? replacement : "none",
@@ -106,9 +103,8 @@ public class FilterManager implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        String message =  event.getMessage();
+        String message = event.getMessage();
         String normalizedMessage = normalizeMessage(message);
-
 
         if (punishmentManager.isPlayerMuted(player)) {
             return;
@@ -117,58 +113,89 @@ public class FilterManager implements Listener {
         String filteredMessage = replaceFilteredWords(message);
         event.setMessage(filteredMessage);
 
-        for (String word : getAllFilteredWords()) {
-            String normalizedWord = normalizeMessage(word);
-            if (normalizedMessage.contains(normalizedWord)) {
-                if (message.toLowerCase().contains(word.toLowerCase())) {
+        for (String configWord : filterConfig.getKeys(false)) {
+            if (configWord.equals("enabled")) {
+                continue;
+            }
 
-                    if (filterConfig.getBoolean(word + ".cancel.enabled")) {
-                        event.setCancelled(true);
+            String normalizedConfigWord = normalizeMessage(configWord);
+            boolean wordFound = normalizedMessage.contains(normalizedConfigWord) && 
+                               message.toLowerCase().contains(configWord.toLowerCase());
 
-                        List<String> cancelMessageList = filterConfig.getStringList(word + ".cancel.message");
+            List<String> variations = filterConfig.getStringList(configWord + ".variations");
+            boolean variationFound = false;
+            String foundVariation = "";
+            
+            for (String variation : variations) {
+                String normalizedVariation = normalizeMessage(variation);
+                if (normalizedMessage.contains(normalizedVariation) && 
+                    message.toLowerCase().contains(variation.toLowerCase())) {
+                    variationFound = true;
+                    foundVariation = variation;
+                    break;
+                }
+            }
 
+            if (wordFound || variationFound) {
+                String displayWord = wordFound ? configWord : foundVariation;
+
+                if (filterConfig.getBoolean(configWord + ".cancel.enabled")) {
+                    event.setCancelled(true);
+                    
+                    List<String> cancelMessageList = filterConfig.getStringList(configWord + ".cancel.message");
+                    
+                    if (!cancelMessageList.isEmpty()) {
                         for (String cancelMessage : cancelMessageList) {
                             cancelMessage = cancelMessage.replace("%player%", player.getName());
-                            cancelMessage = cancelMessage.replace("%word%", word);
+                            cancelMessage = cancelMessage.replace("%word%", displayWord);
                             cancelMessage = cancelMessage.replace("%message%", message);
-                            if (!cancelMessageList.isEmpty()) {
-                                player.sendMessage(CC.send(cancelMessage));
-                            } else {
-                                player.sendMessage(CC.sendRed("Your message was blocked due to inappropriate content."));
-                            }
+                            player.sendMessage(CC.send(cancelMessage));
                         }
+                    } else {
+                        player.sendMessage(CC.sendRed("Your message was blocked due to inappropriate content."));
                     }
+                }
 
-                    if (filterConfig.getBoolean(word + ".notify-staff.enabled")) {
-                        List<String> notifyMessages = filterConfig.getStringList(word + ".notify-staff.message");
+                if (filterConfig.getBoolean(configWord + ".notify-staff.enabled")) {
+                    List<String> notifyMessages = filterConfig.getStringList(configWord + ".notify-staff.message");
+                    
+                    if (!notifyMessages.isEmpty()) {
                         for (String notifyMessage : notifyMessages) {
                             notifyMessage = CC.send(notifyMessage
                                     .replace("%player%", player.getName())
-                                    .replace("%word%", word)
+                                    .replace("%word%", displayWord)
                                     .replace("%message%", message));
+                            
                             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                                if (onlinePlayer.hasPermission(PS.filter_notify) && alertManager.hasAlertEnabled(player, Alert.STAFF)) {
-                                    if (!notifyMessage.isEmpty()) {
-                                        onlinePlayer.sendMessage(notifyMessage);
-                                    } else {
-                                        onlinePlayer.sendMessage("&b[Staff] &f" + player.getName() + " &bhas flagged the filter for saying &e'" + word + "'");
-                                    }
+                                if (onlinePlayer.hasPermission(P.filter_notify) && alertManager.hasAlertEnabled(player, Alert.STAFF)) {
+                                    onlinePlayer.sendMessage(notifyMessage);
                                 }
                             }
                         }
-                    }
-
-
-                    if (filterConfig.getBoolean(word + ".punishment.enabled")) {
-                        List<String> punishCommandList = filterConfig.getStringList(word + ".punishment.command");
-                        for (String command : punishCommandList) {
-                            String finalCommand = command.replace("%player%", player.getName()).replace("%word%", word).replace("%message%", message);
-                            Bukkit.getScheduler().runTask(plugin, () -> {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
-                            });
+                    } else {
+                        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                            if (onlinePlayer.hasPermission(P.filter_notify) && alertManager.hasAlertEnabled(player, Alert.STAFF)) {
+                                onlinePlayer.sendMessage("&b[Staff] &f" + player.getName() + " &bhas flagged the filter for saying &e'" + displayWord + "'");
+                            }
                         }
                     }
                 }
+
+                if (filterConfig.getBoolean(configWord + ".punishment.enabled")) {
+                    List<String> punishCommandList = filterConfig.getStringList(configWord + ".punishment.command");
+                    for (String command : punishCommandList) {
+                        String finalCommand = command
+                                .replace("%player%", player.getName())
+                                .replace("%word%", displayWord)
+                                .replace("%message%", message);
+                        
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
+                        });
+                    }
+                }
+
+                break;
             }
         }
     }

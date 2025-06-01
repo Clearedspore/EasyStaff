@@ -5,14 +5,14 @@ import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.punishment.PunishmentManager;
 import me.clearedspore.storage.PlayerData;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-@CommandPermission(PS.alts)
+@CommandPermission(P.alts)
 @CommandAlias("alts")
 public class AltsCommand extends BaseCommand {
 

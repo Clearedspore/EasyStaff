@@ -3,14 +3,14 @@ package me.clearedspore.command.punishment;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import me.clearedspore.util.TimeUtil;
 import me.clearedspore.feature.punishment.PunishmentManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
-@CommandPermission(PS.tempban)
+@CommandPermission(P.tempban)
 @CommandAlias("tempban")
 public class TempBanCommand extends BaseCommand {
 
@@ -51,14 +51,14 @@ public class TempBanCommand extends BaseCommand {
 
         for (String part : reasonParts) {
             if ("-s".equalsIgnoreCase(part)) {
-                if (player.hasPermission(PS.silent)) {
+                if (player.hasPermission(P.silent)) {
                     silent = true;
                 } else {
                     player.sendMessage(CC.send("&cYou don't have permission to use the silent flag."));
                     return;
                 }
             } else if ("-hs".equalsIgnoreCase(part)) {
-                if (player.hasPermission(PS.high_silent)) {
+                if (player.hasPermission(P.high_silent)) {
                     hideStaffMessage = true;
                 } else {
                     player.sendMessage(CC.send("&cYou don't have permission to use the high silent flag."));

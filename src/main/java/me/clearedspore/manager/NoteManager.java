@@ -2,7 +2,7 @@ package me.clearedspore.manager;
 
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.storage.PlayerData;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -123,7 +123,7 @@ public class NoteManager implements Listener {
                 @Override
                 public void run() {
                     for (Player players : Bukkit.getOnlinePlayers()) {
-                        if (players.hasPermission(PS.notes_notify)) {
+                        if (players.hasPermission(P.notes_notify)) {
                             players.sendMessage(CC.sendBlue(player.getName() + "'s notes:"));
                             for (String note : notes) {
                                 players.sendMessage(CC.send(note));

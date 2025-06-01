@@ -4,15 +4,14 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Description;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.discord.DiscordManager;
 import me.clearedspore.util.ChatInputHandler;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.entity.Player;
 
 @CommandAlias("staff-link")
-@CommandPermission(PS.discord_link)
+@CommandPermission(P.discord_link)
 public class StaffLinkCommand extends BaseCommand {
 
     private final DiscordManager discordManager;

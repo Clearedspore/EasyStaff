@@ -6,7 +6,7 @@ import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.menu.reportmenu.evidence.EvidenceMenu;
 import me.clearedspore.menu.reportmenu.reportplayer.ReportPlayerMenu;
 import me.clearedspore.feature.reports.ReportManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-@CommandPermission(PS.report_player)
+@CommandPermission(P.report_player)
 @CommandAlias("report")
 public class ReportCommand extends BaseCommand {
 

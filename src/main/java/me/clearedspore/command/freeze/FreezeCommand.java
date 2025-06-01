@@ -4,7 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.storage.PlayerData;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 @CommandAlias("freeze")
-@CommandPermission(PS.freeze)
+@CommandPermission(P.freeze)
 public class FreezeCommand extends BaseCommand implements Listener {
 
     private final PlayerData playerData;
@@ -54,7 +54,7 @@ public class FreezeCommand extends BaseCommand implements Listener {
 
         if(playerData.isFreezed(player)){
             for(Player players : Bukkit.getOnlinePlayers()){
-                if(players.hasPermission(PS.freeze_notify)){
+                if(players.hasPermission(P.freeze_notify)){
                     players.sendMessage(CC.sendBlue(""));
                     players.sendMessage(CC.sendBlue("&l" + player.getName() + " has logged out while frozen!"));
                     players.sendMessage(CC.sendBlue(""));

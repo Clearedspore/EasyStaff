@@ -13,9 +13,6 @@ discord:
     punishments: ""
     # Webhook for reports
     reports: ""
-    # Webhook for chat channels (optional)
-    # Staff chat and admin chat etc.
-    chat: ""
     # Webhook URL for linking accounts
     linking: ""
 
@@ -56,6 +53,12 @@ punishments:
 # The reason for this option is that you could already have a plugin that uses an advanced
 # version and don't want to use this plugins feature
 advanced-tp: true
+
+chat:
+  # If the chat is enabled or not
+  enabled: true
+  # How many empty lines it sends when you clear the chat
+  clear-lines: 200
 
 maintenance:
   # If maintenance is enabled
@@ -123,7 +126,7 @@ blocked-names:
   - "fucking_cool"
 
 vanish:
-  # If you want to use the TAB plugin or not
+  # If you want to 
   tab: true
   # Tag the player will get when they vanish!
   tag: " &f[&b&lV&f]"

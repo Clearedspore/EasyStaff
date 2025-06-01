@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.punishment.PunishmentManager;
 import me.clearedspore.feature.punishment.menu.punishplayer.PunishPlayerMenu;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.List;
 
 @CommandAlias("punish|p")
-@CommandPermission(PS.punish)
+@CommandPermission(P.punish)
 public class PunishCommand extends BaseCommand {
 
     private final PunishmentManager punishmentManager;
@@ -61,14 +61,14 @@ public class PunishCommand extends BaseCommand {
         for (int i = 1; i < args.length; i++) {
             String part = args[i];
             if ("-s".equalsIgnoreCase(part)) {
-                if (sender.hasPermission(PS.silent)) {
+                if (sender.hasPermission(P.silent)) {
                     silent = true;
                 } else {
                     sender.sendMessage(CC.send("&cYou don't have permission to use the silent flag."));
                     return;
                 }
             } else if ("-hs".equalsIgnoreCase(part)) {
-                if (sender.hasPermission(PS.high_silent)) {
+                if (sender.hasPermission(P.high_silent)) {
                     hideStaffMessage = true;
                 } else {
                     sender.sendMessage(CC.send("&cYou don't have permission to use the high silent flag."));
@@ -84,12 +84,12 @@ public class PunishCommand extends BaseCommand {
 
         String reason = reasonBuilder.toString();
 
-        if (!sender.hasPermission(PS.punish_ban) &&
-                !sender.hasPermission(PS.punish_tempban) &&
-                !sender.hasPermission(PS.punish_mute) &&
-                !sender.hasPermission(PS.punish_tempmute) &&
-                !sender.hasPermission(PS.punish_warn) &&
-                !sender.hasPermission(PS.punish_kick)) {
+        if (!sender.hasPermission(P.punish_ban) &&
+                !sender.hasPermission(P.punish_tempban) &&
+                !sender.hasPermission(P.punish_mute) &&
+                !sender.hasPermission(P.punish_tempmute) &&
+                !sender.hasPermission(P.punish_warn) &&
+                !sender.hasPermission(P.punish_kick)) {
             sender.sendMessage(CC.send("&cYou don't have permission to use this command."));
             return;
         }

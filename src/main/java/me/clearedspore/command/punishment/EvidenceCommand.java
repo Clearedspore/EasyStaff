@@ -4,10 +4,10 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.discord.DiscordManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.entity.Player;
 
-@CommandPermission(PS.punish)
+@CommandPermission(P.punish)
 @CommandAlias("evidence")
 public class EvidenceCommand extends BaseCommand {
 

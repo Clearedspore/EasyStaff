@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.punishment.PunishmentManager;
 import me.clearedspore.storage.PlayerData;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-@CommandPermission(PS.whois)
+@CommandPermission(P.whois)
 @CommandAlias("whois|checkplayer")
 public class WhoisCommand extends BaseCommand {
 
@@ -100,10 +100,10 @@ public class WhoisCommand extends BaseCommand {
             TextComponent nextPage = new TextComponent(CC.sendBlue("[Next Page]"));
             nextPage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/whois " + targetName + " 2"));
             nextPage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to go to the next page")));
-            if(player.hasPermission(PS.alts)) {
+            if(player.hasPermission(P.alts)) {
                 nextPage.addExtra(alts);
             }
-            if(player.hasPermission(PS.history_others)){
+            if(player.hasPermission(P.history_others)){
                 nextPage.addExtra(history);
             }
             player.spigot().sendMessage(nextPage);
@@ -120,7 +120,7 @@ public class WhoisCommand extends BaseCommand {
             player.sendMessage(CC.sendBlue("Mutes: &f" + punishmentManager.getAllMutes(target).size()));
             player.sendMessage(CC.sendBlue("Warns: &f" + punishmentManager.getAllWarns(target).size()));
             player.sendMessage(CC.sendBlue("Kicks: &f" + punishmentManager.getAllKicks(target).size()));
-            if(player.hasPermission(PS.alts)) {
+            if(player.hasPermission(P.alts)) {
                 player.sendMessage(CC.sendBlue(""));
                 player.sendMessage(CC.sendBlue("Alts: &a[Online] &7[Offline] &c[Banned] &9[Muted]"));
                 if(!hasAlts) {

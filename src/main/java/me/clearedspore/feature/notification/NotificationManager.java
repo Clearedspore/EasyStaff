@@ -1,7 +1,7 @@
 package me.clearedspore.feature.notification;
 
 import me.clearedspore.easyAPI.util.CC;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -62,7 +62,7 @@ public class NotificationManager {
     public void notifyHistoryCheck(Player checker, OfflinePlayer target) {
         if (notifyList.contains(target.getName().toLowerCase())) {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player.hasPermission(PS.punish_notify_high)) {
+                if (player.hasPermission(P.punish_notify_high)) {
                     player.sendMessage(CC.sendBlue("[High Staff] &f" + checker.getName() + " &#00CCDEis checking &f" + target.getName() + "'s &#00CCDEhistory"));
                 }
             }

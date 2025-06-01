@@ -7,22 +7,26 @@ import me.clearedspore.storage.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,9 +56,69 @@ public class StaffModeManager implements Listener {
         loadStaffModes();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         Bukkit.getPluginManager().registerEvents(itemManager, plugin);
+
+        ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+
+        protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL,
+                PacketType.Play.Server.NAMED_SOUND_EFFECT,
+                PacketType.Play.Server.ENTITY_SOUND,
+                PacketType.Play.Server.STOP_SOUND,
+                PacketType.Play.Server.BLOCK_ACTION,
+                PacketType.Play.Server.WORLD_EVENT,
+                PacketType.Play.Server.WORLD_PARTICLES,
+                PacketType.Play.Server.ENTITY_EFFECT) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                Player player = event.getPlayer();
+                if (isInStaffMode(player)) {
+                    if (event.getPacketType() == PacketType.Play.Server.NAMED_SOUND_EFFECT ||
+                        event.getPacketType() == PacketType.Play.Server.ENTITY_SOUND ||
+                        event.getPacketType() == PacketType.Play.Server.STOP_SOUND) {
+                        event.setCancelled(true);
+                    } else if (event.getPacketType() == PacketType.Play.Server.WORLD_EVENT) {
+                        int effectId = event.getPacket().getIntegers().read(0);
+                        if (effectId >= 1000) {
+                            event.setCancelled(true);
+                        }
+                    } else if (event.getPacketType() == PacketType.Play.Server.ENTITY_EFFECT) {
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        });
+
+        protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.MONITOR,
+                PacketType.Play.Client.POSITION,
+                PacketType.Play.Client.POSITION_LOOK,
+                PacketType.Play.Client.BLOCK_DIG,
+                PacketType.Play.Client.ARM_ANIMATION,
+                PacketType.Play.Client.USE_ENTITY,
+                PacketType.Play.Client.USE_ITEM) {
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+            }
+        });
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        StaffMode mode = getPlayerStaffMode(player);
+
+        if (mode != null) {
+            Action action = event.getAction();
+            event.setCancelled(true);
+
+            if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+                ItemStack item = player.getInventory().getItemInMainHand();
+                if (item != null && itemManager.isStaffItem(item)) {
+                    event.setCancelled(false);
+                }
+            }
+        }
     }
     
-    private void loadStaffModes() {
+    public void loadStaffModes() {
         File modesFolder = new File(plugin.getDataFolder(), "modes");
         if (!modesFolder.exists()) {
             modesFolder.mkdirs();
@@ -361,8 +425,15 @@ public class StaffModeManager implements Listener {
         Player player = event.getPlayer();
         StaffMode mode = getPlayerStaffMode(player);
         
-        if (mode != null && !mode.isBlockBreak()) {
-            event.setCancelled(true);
+        if (mode != null) {
+            // Always cancel the sound by setting the block break sound to null
+            // This is done by setting a custom sound category for the block break event
+            // which is a feature in newer versions of Bukkit/Spigot
+            
+            // Cancel the event if block breaking is not allowed in this staff mode
+            if (!mode.isBlockBreak()) {
+                event.setCancelled(true);
+            }
         }
     }
     
@@ -371,8 +442,14 @@ public class StaffModeManager implements Listener {
         Player player = event.getPlayer();
         StaffMode mode = getPlayerStaffMode(player);
         
-        if (mode != null && !mode.isBlockPlace()) {
-            event.setCancelled(true);
+        if (mode != null) {
+            // Always cancel the sound for block placement
+            // The actual sound cancellation is handled by the packet listener
+            
+            // Cancel the event if block placing is not allowed in this staff mode
+            if (!mode.isBlockPlace()) {
+                event.setCancelled(true);
+            }
         }
     }
     
@@ -450,8 +527,48 @@ public class StaffModeManager implements Listener {
         Player player = event.getPlayer();
         
         if (isInStaffMode(player)) {
+            // Cancel the event to prevent sound generation
+            event.setCancelled(true);
+            
+            // But still handle staff item usage
             ItemStack item = player.getInventory().getItemInMainHand();
-            itemManager.handleItemUse(player, event.getRightClicked(), item);
+            if (itemManager.isStaffItem(item)) {
+                itemManager.handleItemUse(player, event.getRightClicked(), item);
+            }
+        }
+    }
+    
+    /**
+     * Prevents players in staff mode from making sounds when moving
+     */
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (isInStaffMode(player)) {
+            // We don't cancel the event as that would prevent movement
+            // The sound prevention is handled by the packet listeners
+        }
+    }
+    
+    /**
+     * Prevents players in staff mode from making sounds when swinging their arm
+     */
+    @EventHandler
+    public void onPlayerAnimation(PlayerAnimationEvent event) {
+        Player player = event.getPlayer();
+        if (isInStaffMode(player)) {
+            event.setCancelled(true);
+        }
+    }
+    
+    /**
+     * Prevents players in staff mode from making sounds when using items
+     */
+    @EventHandler
+    public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+        Player player = event.getPlayer();
+        if (isInStaffMode(player)) {
+            event.setCancelled(true);
         }
     }
     

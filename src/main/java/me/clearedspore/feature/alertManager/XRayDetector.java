@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
@@ -17,6 +18,11 @@ public class XRayDetector implements Listener {
     private final AlertManager alertManager;
     private final Set<Material> monitoredBlocks = new HashSet<>();
     private final int veinDetectionRadius;
+    
+
+    private final Map<String, Set<UUID>> alertedVeins = new HashMap<>();
+
+    private BukkitTask cleanupTask;
 
     public XRayDetector(JavaPlugin plugin, AlertManager alertManager) {
         this.plugin = plugin;
@@ -37,24 +43,46 @@ public class XRayDetector implements Listener {
         veinDetectionRadius = config.getInt("alerts.vein-detection-radius", 5);
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+
+        cleanupTask = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            alertedVeins.clear();
+        }, 12000L, 12000L);
+    }
+
+    public void cleanup() {
+        if (cleanupTask != null && !cleanupTask.isCancelled()) {
+            cleanupTask.cancel();
+        }
+        alertedVeins.clear();
     }
     
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         Material blockType = block.getType();
-
-
         Player player = event.getPlayer();
+        
         if (monitoredBlocks.contains(blockType) && !player.getGameMode().equals(GameMode.CREATIVE)) {
+            VeinResult veinResult = calculateVein(block);
+            int veinSize = veinResult.getSize();
 
-            int veinSize = calculateVeinSize(block);
+            Block centerBlock = veinResult.getCenterBlock();
+            String veinId = centerBlock.getWorld().getName() + ":" + 
+                            centerBlock.getX() + ":" + 
+                            centerBlock.getY() + ":" + 
+                            centerBlock.getZ();
 
-            alertManager.xRayAlert(player, veinSize, block);
+            Set<UUID> alertedPlayers = alertedVeins.computeIfAbsent(veinId, k -> new HashSet<>());
+            
+            if (!alertedPlayers.contains(player.getUniqueId())) {
+                alertManager.xRayAlert(player, veinSize, block);
+
+                alertedPlayers.add(player.getUniqueId());
+            }
         }
     }
 
-    private int calculateVeinSize(Block startBlock) {
+    private VeinResult calculateVein(Block startBlock) {
         Material targetMaterial = startBlock.getType();
         Set<Block> checkedBlocks = new HashSet<>();
         Queue<Block> blocksToCheck = new LinkedList<>();
@@ -62,8 +90,19 @@ public class XRayDetector implements Listener {
         blocksToCheck.add(startBlock);
         checkedBlocks.add(startBlock);
 
+        int minX = startBlock.getX(), maxX = startBlock.getX();
+        int minY = startBlock.getY(), maxY = startBlock.getY();
+        int minZ = startBlock.getZ(), maxZ = startBlock.getZ();
+
         while (!blocksToCheck.isEmpty() && checkedBlocks.size() <= 100) {
             Block currentBlock = blocksToCheck.poll();
+
+            minX = Math.min(minX, currentBlock.getX());
+            maxX = Math.max(maxX, currentBlock.getX());
+            minY = Math.min(minY, currentBlock.getY());
+            maxY = Math.max(maxY, currentBlock.getY());
+            minZ = Math.min(minZ, currentBlock.getZ());
+            maxZ = Math.max(maxZ, currentBlock.getZ());
 
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {
@@ -82,7 +121,30 @@ public class XRayDetector implements Listener {
                 }
             }
         }
+
+        int centerX = (minX + maxX) / 2;
+        int centerY = (minY + maxY) / 2;
+        int centerZ = (minZ + maxZ) / 2;
+        Block centerBlock = startBlock.getWorld().getBlockAt(centerX, centerY, centerZ);
         
-        return checkedBlocks.size();
+        return new VeinResult(checkedBlocks.size(), centerBlock);
+    }
+
+    private static class VeinResult {
+        private final int size;
+        private final Block centerBlock;
+        
+        public VeinResult(int size, Block centerBlock) {
+            this.size = size;
+            this.centerBlock = centerBlock;
+        }
+        
+        public int getSize() {
+            return size;
+        }
+        
+        public Block getCenterBlock() {
+            return centerBlock;
+        }
     }
 }

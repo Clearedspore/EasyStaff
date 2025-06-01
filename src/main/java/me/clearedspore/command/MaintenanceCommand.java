@@ -8,7 +8,7 @@ import me.clearedspore.easyAPI.util.TimeParser;
 import me.clearedspore.feature.setting.SettingsManager;
 import me.clearedspore.storage.PlayerData;
 import me.clearedspore.manager.MaintenanceManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -20,7 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.List;
 
 @CommandAlias("maintenance")
-@CommandPermission(PS.maintenance)
+@CommandPermission(P.maintenance)
 public class MaintenanceCommand extends BaseCommand {
 
     private final MaintenanceManager maintenanceManager;
@@ -35,7 +35,7 @@ public class MaintenanceCommand extends BaseCommand {
 
     @Subcommand("add")
     @CommandCompletion("@players")
-    @CommandPermission(PS.maintenance_add)
+    @CommandPermission(P.maintenance_add)
     @Syntax("<player>")
     private void onMaintenanceAdd(CommandSender player, String targetName){
 
@@ -51,7 +51,7 @@ public class MaintenanceCommand extends BaseCommand {
 
     @Subcommand("remove")
     @CommandCompletion("@maintenanceexemptPlayers")
-    @CommandPermission(PS.maintenance_remove)
+    @CommandPermission(P.maintenance_remove)
     @Syntax("<player>")
     private void onMaintenanceRemove(CommandSender player, String targetName){
 
@@ -66,7 +66,7 @@ public class MaintenanceCommand extends BaseCommand {
     }
 
     @Subcommand("info")
-    @CommandPermission(PS.maintenance_info)
+    @CommandPermission(P.maintenance_info)
     private void onMaintenanceInfo(CommandSender player) {
         boolean enabled = maintenanceManager.isEnabled();
         List<String> exemptPlayers = maintenanceManager.getExemptPlayers();
@@ -90,7 +90,7 @@ public class MaintenanceCommand extends BaseCommand {
     }
 
         @Subcommand("toggle")
-        @CommandPermission(PS.maintenance_toggle)
+        @CommandPermission(P.maintenance_toggle)
         private void onMaintenanceToggle(CommandSender player){
 
         boolean enabled = !maintenanceManager.isEnabled();
@@ -99,14 +99,14 @@ public class MaintenanceCommand extends BaseCommand {
         player.sendMessage(CC.sendBlue("You have " + (enabled ? "enabled" : "disabled") + " maintenance"));
             for (Player players : Bukkit.getOnlinePlayers()) {
                 PlayerData playerData = EasyStaff.getInstance().getPlayerData();
-                if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(PS.maintenance_logs)) {
+                if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(P.maintenance_logs)) {
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEhas " + (enabled ? "enabled" : "disabled") +  " maintenance"));
                 }
             }
     }
 
         @Subcommand("off")
-        @CommandPermission(PS.maintenance_toggle)
+        @CommandPermission(P.maintenance_toggle)
         private void onMaintenanceOn(CommandSender player){
 
         if(!maintenanceManager.isEnabled()){
@@ -118,14 +118,14 @@ public class MaintenanceCommand extends BaseCommand {
         player.sendMessage(CC.sendBlue("You have disabled maintenance"));
             for (Player players : Bukkit.getOnlinePlayers()) {
                 PlayerData playerData = EasyStaff.getInstance().getPlayerData();
-                if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(PS.maintenance_logs)) {
+                if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(P.maintenance_logs)) {
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEhas disabled maintenance"));
                 }
             }
     }
 
         @Subcommand("on")
-        @CommandPermission(PS.maintenance_toggle)
+        @CommandPermission(P.maintenance_toggle)
         private void onMaintenanceOff(CommandSender player) {
 
             if (maintenanceManager.isEnabled()) {
@@ -137,14 +137,14 @@ public class MaintenanceCommand extends BaseCommand {
             player.sendMessage(CC.sendBlue("You have enabled maintenance"));
             for (Player players : Bukkit.getOnlinePlayers()) {
                 PlayerData playerData = EasyStaff.getInstance().getPlayerData();
-                if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(PS.maintenance_logs)) {
+                if (SettingsManager.isSettingEnabled(playerData, players, "maintenance_logs", true) && players.hasPermission(P.maintenance_logs)) {
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEhas enabled maintenance"));
                 }
             }
     }
 
         @Subcommand("kickall")
-        @CommandPermission(PS.maintenance_kickall)
+        @CommandPermission(P.maintenance_kickall)
         private void onMaintenanceKickAll(CommandSender player){
 
         if(!maintenanceManager.isEnabled()){
@@ -158,7 +158,7 @@ public class MaintenanceCommand extends BaseCommand {
 
 
     @Subcommand("timer start")
-    @CommandPermission(PS.maintenance_toggle)
+    @CommandPermission(P.maintenance_toggle)
     @Syntax("<time>")
     public void onStart(CommandSender sender, String time, @Optional String... reasonParts) {
         String reason = String.join(" ", reasonParts);
@@ -187,7 +187,7 @@ public class MaintenanceCommand extends BaseCommand {
                 player.sendMessage(CC.sendRed(""));
                 player.sendMessage(CC.sendRed("&lMaintenance!"));
                 player.sendMessage(CC.sendWhite("&l" + formattedTime + " remaining!"));
-                player.sendMessage(CC.sendWhite("Reason: &l" + reason));
+                player.sendMessage(CC.sendWhite("Reason: " + reason));
                 player.sendMessage(CC.sendRed(""));
             }
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 2.0f, 1.0f);
@@ -217,7 +217,7 @@ public class MaintenanceCommand extends BaseCommand {
                                 player.sendMessage(CC.sendRed(""));
                                 player.sendMessage(CC.sendRed("&lMaintenance!"));
                                 player.sendMessage(CC.sendWhite("&l" + formattedTime + " remaining!"));
-                                player.sendMessage(CC.sendWhite("Reason: &l" + reason));
+                                player.sendMessage(CC.sendWhite("Reason: " + reason));
                                 player.sendMessage(CC.sendRed(""));
                             }
                             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 2.0f, 1.0f);
@@ -225,8 +225,8 @@ public class MaintenanceCommand extends BaseCommand {
                     }
                     countdown--;
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "maintenance on");
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "maintenance kickall");
+                    maintenanceManager.setMaintenance(true);
+                    maintenanceManager.kickAll(sender);
                     this.cancel();
                 }
             }
@@ -235,7 +235,7 @@ public class MaintenanceCommand extends BaseCommand {
     }
 
     @Subcommand("timer cancel")
-    @CommandPermission(PS.maintenance_toggle)
+    @CommandPermission(P.maintenance_toggle)
     public void onCancel(CommandSender sender) {
         if (countdownTask != null && !countdownTask.isCancelled()) {
             countdownTask.cancel();

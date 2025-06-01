@@ -4,19 +4,22 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.punishment.PunishmentManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
 
 @CommandAlias("unmute")
-@CommandPermission(PS.unmute)
+@CommandPermission(P.unmute)
 public class UnMuteCommand extends BaseCommand {
 
     private final PunishmentManager punishmentManager;
+    private final JavaPlugin plugin;
 
-    public UnMuteCommand(PunishmentManager punishmentManager) {
+    public UnMuteCommand(PunishmentManager punishmentManager, JavaPlugin plugin) {
         this.punishmentManager = punishmentManager;
+        this.plugin = plugin;
     }
 
     @Default
@@ -35,14 +38,14 @@ public class UnMuteCommand extends BaseCommand {
 
         for (String part : reasonParts) {
             if ("-s".equalsIgnoreCase(part)) {
-                if (player.hasPermission(PS.silent)) {
+                if (player.hasPermission(P.silent)) {
                     silent = true;
                 } else {
                     player.sendMessage(CC.send("&cYou don't have permission to use the silent flag."));
                     return;
                 }
             } else if ("-hs".equalsIgnoreCase(part)) {
-                if (player.hasPermission(PS.high_silent)) {
+                if (player.hasPermission(P.high_silent)) {
                     hideStaffMessage = true;
                 } else {
                     player.sendMessage(CC.send("&cYou don't have permission to use the high silent flag."));
@@ -59,6 +62,11 @@ public class UnMuteCommand extends BaseCommand {
         String reason = reasonBuilder.length() > 0 ? reasonBuilder.toString() : "No reason specified";
 
         OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
+
+        if (!plugin.getConfig().getBoolean("punishments.remove-own") && target.equals(player) && !player.hasPermission(P.removeown_bypass)) {
+            player.sendMessage(CC.sendRed("You cannot remove your own punishment!"));
+            return;
+        }
 
         boolean unMuted = punishmentManager.unMutePlayer(player, target, reason, silent, hideStaffMessage);
 

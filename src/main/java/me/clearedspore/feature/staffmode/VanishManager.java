@@ -5,7 +5,7 @@ import me.clearedspore.feature.channels.Channel;
 import me.clearedspore.feature.channels.ChannelManager;
 import me.clearedspore.feature.setting.SettingsManager;
 import me.clearedspore.storage.PlayerData;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.nametag.NameTagManager;
@@ -63,10 +63,12 @@ public class VanishManager implements Listener {
             for(Player onlinePlayer : Bukkit.getOnlinePlayers()){
                 String leaveMessage = plugin.getConfig().getString("vanish.leave");
                 leaveMessage = leaveMessage.replace("%player%", player.getName());
-                onlinePlayer.sendMessage(CC.send(leaveMessage));
+                if(!leaveMessage.equals("null")) {
+                    onlinePlayer.sendMessage(CC.send(leaveMessage));
+                }
                 if(onlinePlayer.equals(player)) {
                     continue;
-                } else if(onlinePlayer.hasPermission(PS.vanish_see)) {
+                } else if(onlinePlayer.hasPermission(P.vanish_see)) {
                     onlinePlayer.showPlayer(plugin, player);
                 } else {
                     onlinePlayer.hidePlayer(plugin, player);
@@ -89,7 +91,9 @@ public class VanishManager implements Listener {
                 onlinePlayer.showPlayer(plugin, player);
                 String joinMessage = plugin.getConfig().getString("vanish.join");
                 joinMessage = joinMessage.replace("%player%", player.getName());
-                onlinePlayer.sendMessage(CC.send(joinMessage));
+                if(!joinMessage.equals("null")) {
+                    onlinePlayer.sendMessage(CC.send(joinMessage));
+                }
             }
 
             if (vanished.isEmpty()) {
@@ -116,7 +120,7 @@ public class VanishManager implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
 
-        if(player.hasPermission(PS.vanish) && SettingsManager.isSettingEnabled(playerData, player, "vanish_on_join", true)){
+        if(player.hasPermission(P.vanish) && SettingsManager.isSettingEnabled(playerData, player, "vanish_on_join", true)){
             setVanished(player, true);
             event.setJoinMessage(null);
         }
@@ -124,7 +128,7 @@ public class VanishManager implements Listener {
         synchronized (vanished) {
             for(Player vanishedPlayer : new HashSet<>(vanished)) {
                 if(vanishedPlayer != null && vanishedPlayer.isOnline()) {
-                    if(player.hasPermission(PS.vanish_see)) {
+                    if(player.hasPermission(P.vanish_see)) {
                         player.showPlayer(plugin, vanishedPlayer);
                     } else {
                         player.hidePlayer(plugin, vanishedPlayer);

@@ -5,11 +5,11 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import me.clearedspore.feature.setting.SettingsManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-@CommandPermission(PS.staff_settings)
+@CommandPermission(P.staff_settings)
 @CommandAlias("staff-settings|staff-options")
 public class StaffSettingsCommand extends BaseCommand {
 

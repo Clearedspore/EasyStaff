@@ -5,16 +5,15 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Subcommand;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.staffmode.StaffModeManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.entity.Player;
 
 @CommandAlias("staffmode|sm|staff|modmode")
-@CommandPermission(PS.staffmode)
+@CommandPermission(P.staffmode)
 public class StaffModeCommand extends BaseCommand {
     
     private final StaffModeManager staffModeManager;

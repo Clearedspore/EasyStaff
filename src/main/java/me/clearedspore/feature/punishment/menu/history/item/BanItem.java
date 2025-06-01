@@ -31,7 +31,7 @@ public class BanItem extends Item {
 
     @Override
     public ItemStack createItem() {
-        ItemStack item = new ItemStack(Material.RED_WOOL);
+        ItemStack item = new ItemStack(Material.IRON_SWORD);
         ItemMeta meta = item.getItemMeta();
 
         if(punishmentManager.getAllBans(target).size() > 1){

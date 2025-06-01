@@ -2,12 +2,15 @@ package me.clearedspore;
 
 import co.aikar.commands.PaperCommandManager;
 import me.clearedspore.command.*;
+import me.clearedspore.command.chat.ChatCommand;
+import me.clearedspore.command.chat.ClearChatCommand;
 import me.clearedspore.command.freeze.FreezeCommand;
 import me.clearedspore.command.punishment.*;
 import me.clearedspore.command.report.ReportCommand;
 import me.clearedspore.command.report.ReportListCommand;
 import me.clearedspore.command.channel.ChannelCommand;
 import me.clearedspore.command.channel.DynamicCommandRegister;
+import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.alertManager.Alert;
 import me.clearedspore.feature.channels.DiscordChannelInfo;
 import me.clearedspore.feature.notification.NotificationManager;
@@ -34,7 +37,7 @@ import me.clearedspore.manager.NoteManager;
 import me.clearedspore.storage.PlayerData;
 import me.clearedspore.util.ChatInputHandler;
 import me.clearedspore.manager.MaintenanceManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import me.clearedspore.util.ServerPingManager;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.nametag.NameTagManager;
@@ -132,20 +135,26 @@ public final class EasyStaff extends JavaPlugin {
         this.notificationManager = new NotificationManager(this);
 
 
-        if (Bukkit.getPluginManager().getPlugin("TAB") != null && getConfig().getBoolean("vanish.tab")) {
+        if (Bukkit.getPluginManager().getPlugin("TAB") != null) {
             this.nameTagManager = TabAPI.getInstance().getNameTagManager();
             this.tablist = TabAPI.getInstance().getTabListFormatManager();
-            this.vanishManager = new VanishManager(nameTagManager, tablist, channelManager, this, playerData);
+            logger.info("loading vanish manager");
+            try {
+                this.vanishManager = new VanishManager(nameTagManager, tablist, channelManager, this, playerData);
+            } catch (Exception e) {
+                logger.error("Failed to load vanish manager");
+                logger.error(e.getMessage());
+            }
 
             this.staffModeManager = new StaffModeManager(this, logger, playerData, vanishManager);
 
+            getServer().getPluginManager().registerEvents(staffModeManager, this);
             getServer().getPluginManager().registerEvents(new SilentChestListener(this, staffModeManager), this);
+            commandManager.registerCommand(new VanishCommand(vanishManager));
+            commandManager.registerCommand(new StaffModeCommand(staffModeManager));
         } else {
             logger.error("TAB plugin is not installed");
-            logger.error("It is required if you have it enabled in the config");
-            logger.error("Shutting down");
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
+            logger.error("The vanish and staffmode feature will not be enabled!");
         }
 
         RegisteredServiceProvider<LuckPerms> provider = getServer().getServicesManager().getRegistration(LuckPerms.class);
@@ -153,14 +162,17 @@ public final class EasyStaff extends JavaPlugin {
             luckperms = provider.getProvider();
         }
 
-        if (luckperms != null) {
+        if (luckperms != null && vanishManager != null) {
             ContextManager contextManager = luckperms.getContextManager();
             contextManager.registerCalculator(new VanishContext(vanishManager));
+            contextManager.registerCalculator(new StaffModeContext(staffModeManager));
+        } else if (luckperms != null) {
+            logger.warn("Not registering VanishContext because vanishManager is null");
         }
 
         logger.info("registering permissions");
         try {
-            PS.registerPermissions();
+            P.registerPermissions();
             logger.info("successfully registered all permissions");
         } catch (Exception e){
             logger.error("Failed to register permissions");
@@ -177,6 +189,7 @@ public final class EasyStaff extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockNameCommand(this, reasonsConfig, alertManager), this);
         registerCommands();
         registerListeners();
+        logger.info("Plugin enabled");
     }
 
     private void registerPlaceholders(){
@@ -193,20 +206,19 @@ public final class EasyStaff extends JavaPlugin {
         logger.info("Registering commands");
         try {
             commandManager.registerCommand(new BanCommand(punishmentManager));
-            commandManager.registerCommand(new UnBanCommand(punishmentManager));
+            commandManager.registerCommand(new UnBanCommand(punishmentManager, this));
             commandManager.registerCommand(new TempBanCommand(punishmentManager));
             commandManager.registerCommand(new MuteCommand(punishmentManager));
             commandManager.registerCommand(new KickCommand(punishmentManager));
             commandManager.registerCommand(new TempMuteCommand(punishmentManager));
-            commandManager.registerCommand(new UnMuteCommand(punishmentManager));
+            commandManager.registerCommand(new UnMuteCommand(punishmentManager, this));
             commandManager.registerCommand(new HistoryCommand(this, punishmentManager, notificationManager));
             commandManager.registerCommand(new WarnCommand(punishmentManager));
-            commandManager.registerCommand(new EasyStaffCommand(punishmentManager, filterManager, this));
+            commandManager.registerCommand(new EasyStaffCommand(punishmentManager, staffModeManager, filterManager, this));
             commandManager.registerCommand(new AltsCommand(playerData, punishmentManager));
-            commandManager.registerCommand(new VanishCommand(vanishManager));
             commandManager.registerCommand(new StaffSettingsCommand(settingsManager, this));
             commandManager.registerCommand(new PunishCommand(punishmentManager, this));
-            commandManager.registerCommand(new StaffHelp());
+            commandManager.registerCommand(new StaffHelpCommand());
             commandManager.registerCommand(new WhoisCommand(punishmentManager, playerData));
             if(getConfig().getBoolean("advanced-tp")) {
                 commandManager.registerCommand(new StaffTPCommand());
@@ -226,9 +238,9 @@ public final class EasyStaff extends JavaPlugin {
             commandManager.registerCommand(new ChannelCommand(channelManager));
             DynamicCommandRegister.registerDynamicCommands(commandManager, channelManager, logger);
 
-            commandManager.registerCommand(new CPScheckCommand(this));
-            commandManager.registerCommand(new StaffModeCommand(staffModeManager));
             commandManager.registerCommand(new AlertsCommand(alertManager));
+            commandManager.registerCommand(new ChatCommand(this));
+            commandManager.registerCommand(new ClearChatCommand(this));
 
             if (discordManager.isEnabled()) {
                 commandManager.registerCommand(new me.clearedspore.command.discord.StaffLinkCommand(discordManager, chatInputHandler));
@@ -294,9 +306,8 @@ public final class EasyStaff extends JavaPlugin {
             getServer().getPluginManager().registerEvents(maintenanceManager, this);
             getServer().getPluginManager().registerEvents(serverPingManager, this);
             getServer().getPluginManager().registerEvents(new FreezeCommand(playerData), this);
-            getServer().getPluginManager().registerEvents(new CPScheckCommand(this), this);
-            getServer().getPluginManager().registerEvents(staffModeManager, this);
             getServer().getPluginManager().registerEvents(alertManager, this);
+            getServer().getPluginManager().registerEvents(new ChatCommand(this), this);
             logger.info("Listeners registered");
         } catch (Exception e){
             logger.error("Failed to load listeners");
@@ -432,6 +443,10 @@ public final class EasyStaff extends JavaPlugin {
 
         if (discordManager != null) {
             discordManager.shutdown();
+        }
+        
+        if (xRayDetector != null) {
+            xRayDetector.cleanup();
         }
     }
 }

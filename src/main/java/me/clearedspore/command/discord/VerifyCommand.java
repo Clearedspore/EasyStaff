@@ -6,11 +6,11 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.discord.DiscordManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.entity.Player;
 
 @CommandAlias("staff-verify")
-@CommandPermission(PS.discord_link)
+@CommandPermission(P.discord_link)
 public class VerifyCommand extends BaseCommand {
 
     private final DiscordManager discordManager;

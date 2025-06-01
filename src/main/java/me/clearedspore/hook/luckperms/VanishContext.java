@@ -18,11 +18,11 @@ public class VanishContext implements ContextCalculator<Player> {
 
     @Override
     public void calculate(Player target, ContextConsumer consumer) {
-        if (target.isOnline()) {
-            if(vanishManager.isVanished(target.getPlayer()))
-                consumer.accept(KEY, String.valueOf(true));
-            } else {
-                consumer.accept(KEY, String.valueOf(false));
-            }
+        if (target.isOnline() && vanishManager != null) {
+            boolean isVanished = vanishManager.isVanished(target);
+            consumer.accept(KEY, String.valueOf(isVanished));
+        } else {
+            consumer.accept(KEY, String.valueOf(false));
         }
     }
+}

@@ -1,6 +1,5 @@
 package me.clearedspore.util;
 
-import me.clearedspore.feature.channels.ChannelManager;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.PluginManager;
@@ -8,7 +7,7 @@ import org.bukkit.plugin.PluginManager;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-public class PS {
+public class P {
 
     public static final String easystaff = "easystaff";
     public static final String reload = "easystaff.reload";
@@ -87,7 +86,6 @@ public class PS {
     public static final String channel_list = "easystaff.channel.list";
     public static final String channel = "easystaff.channel";
 
-    public static final String cps = "easystaff.cps";
     
     public static final String staffmode = "easystaff.staffmode";
 
@@ -102,10 +100,18 @@ public class PS {
 
     public static final String discord_link = "easystaff.discord.link";
 
+    public static final String chat_clear = "easystaff.chat.clear";
+    public static final String chat_clear_bypass = "easystaff.chat.clearbypass";
+    public static final String chat_toggle = "easystaff.chat.toggle";
+    public static final String chat_toggle_bpyass = "easystaff.chat.togglebypass";
+    public static final String chat = "easystaff.chat";
+
+    public static final String cps = "easystaff.cps";
+
     public static void registerPermissions() {
         PluginManager pluginManager = Bukkit.getPluginManager();
 
-        Field[] fields = PS.class.getDeclaredFields();
+        Field[] fields = P.class.getDeclaredFields();
         for (Field field : fields) {
             if (Modifier.isStatic(field.getModifiers()) && Modifier.isPublic(field.getModifiers()) && field.getType().equals(String.class)) {
                 try {

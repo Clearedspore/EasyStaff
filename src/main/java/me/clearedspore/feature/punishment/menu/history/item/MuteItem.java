@@ -31,7 +31,7 @@ public class MuteItem extends Item {
 
     @Override
     public ItemStack createItem() {
-        ItemStack item = new ItemStack(Material.BLUE_WOOL);
+        ItemStack item = new ItemStack(Material.IRON_AXE);
         ItemMeta meta = item.getItemMeta();
 
         if(punishmentManager.getAllMutes(target).size() > 1){

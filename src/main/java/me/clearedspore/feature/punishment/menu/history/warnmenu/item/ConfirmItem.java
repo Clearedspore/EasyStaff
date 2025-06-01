@@ -42,7 +42,8 @@ public class ConfirmItem extends Item {
         for(Punishment punishment : punishmentManager.getAllWarns(target)){
             if(punishment.ID().equals(warnId)){
                 lore.add(CC.sendWhite("Reason: " + punishment.reason()));
-                lore.add(CC.sendWhite("Issuer: " + punishment.issuer().getName()));
+                String issuerName = (punishment.issuer() != null) ? punishment.issuer().getName() : "CONSOLE";
+                lore.add(CC.sendWhite("Issuer: " + issuerName));
             }
         }
 

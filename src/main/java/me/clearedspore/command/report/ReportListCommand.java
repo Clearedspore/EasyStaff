@@ -11,12 +11,12 @@ import me.clearedspore.menu.reportmenu.managereport.ManageReportMenu;
 import me.clearedspore.menu.reportmenu.reason.ReportReasonMenu;
 import me.clearedspore.feature.reports.ReportManager;
 import me.clearedspore.feature.reports.ReportStatus;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @CommandAlias("reports|getreports")
-@CommandPermission(PS.reports)
+@CommandPermission(P.reports)
 public class ReportListCommand extends BaseCommand {
 
     private final ReportManager reportManager;

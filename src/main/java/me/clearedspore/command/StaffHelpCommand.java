@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import me.clearedspore.easyAPI.util.CC;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -15,8 +15,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("helpop|requesthelp|helpstaff")
-@CommandPermission(PS.requesthelp)
-public class StaffHelp extends BaseCommand {
+@CommandPermission(P.requesthelp)
+public class StaffHelpCommand extends BaseCommand {
 
 
     @Default
@@ -45,7 +45,7 @@ public class StaffHelp extends BaseCommand {
                         .hoverEvent(HoverEvent.showText(Component.text("Click to message " + player.getName()))));
 
         for (Player staff : Bukkit.getOnlinePlayers()) {
-            if (staff.hasPermission(PS.staff_view)) {
+            if (staff.hasPermission(P.staff_view)) {
                 staff.sendMessage("");
                 staff.sendMessage(message);
                 staff.sendMessage("");

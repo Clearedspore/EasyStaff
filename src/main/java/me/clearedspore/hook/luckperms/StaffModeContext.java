@@ -18,7 +18,7 @@ public class StaffModeContext implements ContextCalculator<Player> {
     @Override
     public void calculate(Player target, ContextConsumer consumer) {
         if (target.isOnline()) {
-            if(staffModeManager.isInStaffMode(target.getPlayer()))
+            if(staffModeManager.isInStaffMode(target))
                 consumer.accept(KEY, String.valueOf(true));
         } else {
             consumer.accept(KEY, String.valueOf(false));

@@ -5,7 +5,8 @@ import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.filter.FilterManager;
 import me.clearedspore.feature.punishment.PunishmentManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.feature.staffmode.StaffModeManager;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -15,22 +16,24 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 
 @CommandAlias("easystaff")
-@CommandPermission(PS.easystaff)
+@CommandPermission(P.easystaff)
 public class EasyStaffCommand extends BaseCommand {
 
     private final PunishmentManager punishmentManager;
+    private final StaffModeManager staffModeManager;
     private final FilterManager filterManager;
     private final JavaPlugin plugin;
 
-    public EasyStaffCommand(PunishmentManager punishmentManager, FilterManager filterManager, JavaPlugin plugin) {
+    public EasyStaffCommand(PunishmentManager punishmentManager, StaffModeManager staffModeManager, FilterManager filterManager, JavaPlugin plugin) {
         this.punishmentManager = punishmentManager;
+        this.staffModeManager = staffModeManager;
         this.filterManager = filterManager;
         this.plugin = plugin;
     }
 
 
     @Subcommand("reload")
-    @CommandPermission(PS.reload)
+    @CommandPermission(P.reload)
     private void onReload(CommandSender sender) {
         plugin.reloadConfig();
 
@@ -43,11 +46,13 @@ public class EasyStaffCommand extends BaseCommand {
         YamlConfiguration filterConfig = YamlConfiguration.loadConfiguration(filterFile);
         filterManager.setFilterConfig(filterConfig);
 
+        staffModeManager.loadStaffModes();
+
         sender.sendMessage(CC.sendBlue("Configuration files have been reloaded."));
     }
 
     @Subcommand("exempt")
-    @CommandPermission(PS.exempt)
+    @CommandPermission(P.exempt)
     private void onExempt(CommandSender player){
         player.sendMessage(CC.sendRed("Usage:"));
         player.sendMessage(CC.sendBlue("/exempt add (player)"));
@@ -56,7 +61,7 @@ public class EasyStaffCommand extends BaseCommand {
     }
 
     @Subcommand("exempt add")
-    @CommandPermission(PS.exempt_add)
+    @CommandPermission(P.exempt_add)
     @CommandCompletion("@players")
     @Syntax("<player>")
     private void onExemptAdd(CommandSender player, String targetName){
@@ -71,7 +76,7 @@ public class EasyStaffCommand extends BaseCommand {
     }
 
     @Subcommand("exempt remove")
-    @CommandPermission(PS.exempt_remove)
+    @CommandPermission(P.exempt_remove)
     @CommandCompletion("@exemptPlayers")
     @Syntax("<player>")
     private void onExemptRemove(CommandSender player, String targetName){
@@ -86,7 +91,7 @@ public class EasyStaffCommand extends BaseCommand {
     }
 
     @Subcommand("exempt list")
-    @CommandPermission(PS.exempt)
+    @CommandPermission(P.exempt)
     private void onExemptList(CommandSender player){
         player.sendMessage(CC.sendBlue("Exempt list:"));
         for(String exemptPlayers : punishmentManager.getExemptPlayers()){
@@ -95,7 +100,7 @@ public class EasyStaffCommand extends BaseCommand {
     }
 
     @Subcommand("clearhistory")
-    @CommandPermission(PS.clear_history)
+    @CommandPermission(P.clear_history)
     @CommandCompletion("@players")
     @Syntax("<player>")
     private void onClearHistory(CommandSender player, String targetName) {

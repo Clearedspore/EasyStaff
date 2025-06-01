@@ -3,13 +3,13 @@ package me.clearedspore.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 @CommandAlias("tp")
-@CommandPermission(PS.teleport)
+@CommandPermission(P.teleport)
 public class StaffTPCommand extends BaseCommand {
 
     @Default
@@ -27,7 +27,7 @@ public class StaffTPCommand extends BaseCommand {
                 player.teleport(target.getLocation());
                 player.sendMessage(CC.sendBlue("Teleported to &f" + target.getName()));
                 for (Player players : Bukkit.getOnlinePlayers()) {
-                    if (players.hasPermission(PS.notify)) {
+                    if (players.hasPermission(P.notify)) {
                         players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEteleported to &f" + target.getName()));
                     }
                 }
@@ -35,7 +35,7 @@ public class StaffTPCommand extends BaseCommand {
                 player.sendMessage(CC.sendRed("That player is not online!"));
             }
         } else if (arg2 != null && arg3 != null) {
-            if (!player.hasPermission(PS.teleport_cords)) {
+            if (!player.hasPermission(P.teleport_cords)) {
                 player.sendMessage(CC.sendRed("You don't have permission to teleport to coordinates!"));
                 return;
             }
@@ -47,7 +47,7 @@ public class StaffTPCommand extends BaseCommand {
                 player.teleport(location);
                 player.sendMessage(CC.sendBlue("Teleported to coordinates: &f" + x + ", " + y + ", " + z));
                 for(Player players : Bukkit.getOnlinePlayers()){
-                    if(players.hasPermission(PS.notify)){
+                    if(players.hasPermission(P.notify)){
                         players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEteleported to &f" + x + ", " + y + ", " + z));
                     }
                 }
@@ -55,7 +55,7 @@ public class StaffTPCommand extends BaseCommand {
                 player.sendMessage(CC.sendRed("Invalid coordinates!"));
             }
         } else if (arg2 != null) {
-            if (!player.hasPermission(PS.teleport_others)) {
+            if (!player.hasPermission(P.teleport_others)) {
                 player.sendMessage(CC.sendRed("You don't have permission to teleport players to yourself!"));
                 return;
             }
@@ -65,7 +65,7 @@ public class StaffTPCommand extends BaseCommand {
                 target1.teleport(target2.getLocation());
                 player.sendMessage(CC.sendBlue("Teleported &f" + target1.getName() + " &bto &f" + target2.getName()));
                 for(Player players : Bukkit.getOnlinePlayers()){
-                    if(players.hasPermission(PS.notify)){
+                    if(players.hasPermission(P.notify)){
                         players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEteleported &f" + target1.getName() + " &#00CCDEto &f" + target2.getName()));
                     }
                 }

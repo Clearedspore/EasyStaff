@@ -4,7 +4,7 @@ import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.easyAPI.util.Logger;
 import me.clearedspore.feature.alertManager.Alert;
 import me.clearedspore.feature.alertManager.AlertManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,7 +18,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.BatchUpdateException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -61,7 +60,7 @@ public class PlayerData implements Listener {
                 if (hasNewName(player)) {
                     logger.info("Player has a new name: " + player.getName());
                     for (Player players : Bukkit.getOnlinePlayers()) {
-                        if (players.hasPermission(PS.notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                        if (players.hasPermission(P.notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                             String configPlayerName = playerConfig.getString("name");
                             players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEhas changed their name to &f" + configPlayerName));
                             logger.info("Sent name change alert to: " + players.getName());

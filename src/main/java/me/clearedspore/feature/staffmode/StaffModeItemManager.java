@@ -3,6 +3,7 @@ package me.clearedspore.feature.staffmode;
 import me.clearedspore.EasyStaff;
 import me.clearedspore.easyAPI.util.CC;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -35,16 +36,16 @@ public class StaffModeItemManager implements Listener {
     }
     
     private void registerDefaultItems() {
-        ItemStack compass = createItem(Material.COMPASS, "&bTeleport Tool", "&7Right-click to teleport to the clicked block");
+        ItemStack compass = createItem(Material.COMPASS, "&aTeleport Tool", "&7Right-click to teleport 5 blocks forward" + "\n&7Left-click to teleport 10 blocks forward");
         items.put("compass", compass);
 
-        ItemStack freezeItem = createItem(Material.ICE, "&bFreeze Player", "&7Right-click a player to freeze them");
+        ItemStack freezeItem = createItem(Material.ICE, "&aFreeze Player", "&7Right-click a player to freeze them");
         items.put("freeze", freezeItem);
 
-        ItemStack vanishItem = createItem(Material.ENDER_EYE, "&bToggle Vanish", "&7Right-click to toggle vanish");
+        ItemStack vanishItem = createItem(Material.ENDER_EYE, "&aToggle Vanish", "&7Right-click to toggle vanish");
         items.put("vanish", vanishItem);
 
-        ItemStack worldEditItem = createItem(Material.WOODEN_AXE, "&bWorldEdit Wand", "&7Use for WorldEdit selections");
+        ItemStack worldEditItem = createItem(Material.WOODEN_AXE, "&aWorldEdit Wand", "&7Use for WorldEdit selections");
         items.put("worldedit", worldEditItem);
 
         itemHandlers.put("freeze", (player, target) -> {
@@ -124,24 +125,55 @@ public class StaffModeItemManager implements Listener {
         
         return !meta1.hasDisplayName() || meta1.getDisplayName().equals(meta2.getDisplayName());
     }
-    
+
+    public boolean isStaffItem(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR) {
+            return false;
+        }
+        
+        for (ItemStack staffItem : items.values()) {
+            if (isSimilar(item, staffItem)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
-        
+
         if (item != null) {
             if (item.getType() == Material.COMPASS && isSimilar(item, items.get("compass"))) {
-                if (event.getClickedBlock() != null) {
-                    player.teleport(event.getClickedBlock().getLocation().add(0.5, 1, 0.5));
-                    player.sendMessage(CC.sendGreen("Teleported to the selected block!"));
-                    event.setCancelled(true);
+                Location currentLocation = player.getLocation();
+                float yaw = currentLocation.getYaw();
+                float pitch = currentLocation.getPitch();
+                double radians = Math.toRadians(yaw);
+
+                double x = currentLocation.getX();
+                double y = currentLocation.getY();
+                double z = currentLocation.getZ();
+
+                if (event.getAction().isRightClick()) {
+                    x -= Math.sin(radians) * 5;
+                    z += Math.cos(radians) * 5;
+                    player.sendMessage(CC.sendGreen("Teleported 5 blocks forward!"));
+                } else if (event.getAction().isLeftClick()) {
+                    x -= Math.sin(radians) * 10;
+                    z += Math.cos(radians) * 10;
+                    player.sendMessage(CC.sendGreen("Teleported 10 blocks forward!"));
                 }
+
+                Location newLocation = new Location(currentLocation.getWorld(), x, y, z, yaw, pitch);
+                player.teleport(newLocation);
+                event.setCancelled(true);
             } else if (item.getType() == Material.ENDER_EYE && isSimilar(item, items.get("vanish"))) {
                 event.setCancelled(true);
-
                 player.performCommand("vanish");
             }
         }
     }
+
 }

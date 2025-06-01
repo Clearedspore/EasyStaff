@@ -3,11 +3,10 @@ package me.clearedspore.feature.setting.settings;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.alertManager.Alert;
 import me.clearedspore.feature.alertManager.AlertManager;
-import me.clearedspore.feature.notification.NotificationManager;
 import me.clearedspore.feature.setting.Setting;
 import me.clearedspore.feature.setting.SettingsManager;
 import me.clearedspore.storage.PlayerData;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -65,6 +64,6 @@ public class StaffNotfySetting extends Setting {
 
     @Override
     public Boolean meetsRequirement(Player player) {
-        return player.hasPermission(PS.vanish);
+        return player.hasPermission(P.vanish);
     }
 }

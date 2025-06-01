@@ -5,7 +5,7 @@ import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.easyAPI.util.StringUtil;
 import me.clearedspore.manager.NoteManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 @CommandAlias("note|notes|managenotes")
-@CommandPermission(PS.notes)
+@CommandPermission(P.notes)
 public class NoteCommand extends BaseCommand {
 
     private final NoteManager noteManager;
@@ -39,7 +39,7 @@ public class NoteCommand extends BaseCommand {
     @Subcommand("add")
     @CommandCompletion("@players")
     @Syntax("<player> <note>")
-    @CommandPermission(PS.notes_add)
+    @CommandPermission(P.notes_add)
     private void onNoteAdd(CommandSender player, String  targetName, String... noteParts){
         OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
         String note = StringUtil.joinWithSpaces(noteParts);
@@ -50,7 +50,7 @@ public class NoteCommand extends BaseCommand {
     @Subcommand("remove")
     @CommandCompletion("@players @noteNumbers")
     @Syntax("<player> <noteNumber>")
-    @CommandPermission(PS.notes_remove)
+    @CommandPermission(P.notes_remove)
     private void onNoteRemove(CommandSender player, String targetName, int noteNumber){
         OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
 
@@ -66,7 +66,7 @@ public class NoteCommand extends BaseCommand {
     @Subcommand("check")
     @CommandCompletion("@players")
     @Syntax("<player>")
-    @CommandPermission(PS.notes_check)
+    @CommandPermission(P.notes_check)
     private void onNotesCheck(CommandSender player, String targetName){
         OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
         if(noteManager.getNotes(target).isEmpty()){

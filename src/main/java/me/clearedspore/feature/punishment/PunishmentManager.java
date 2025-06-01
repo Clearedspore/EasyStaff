@@ -5,7 +5,7 @@ import me.clearedspore.feature.alertManager.Alert;
 import me.clearedspore.feature.alertManager.AlertManager;
 import me.clearedspore.feature.discord.DiscordManager;
 import me.clearedspore.storage.PlayerData;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import me.clearedspore.util.TimeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -210,7 +210,7 @@ public class PunishmentManager implements Listener {
                     }
                 } else {
                     players.sendMessage(CC.send("&cSaftey!"));
-                    players.sendMessage(CC.send("&bfA player just got banned!"));
+                    players.sendMessage(CC.send("&bfA player just got punished!"));
                     players.sendMessage(CC.send("&bfMake sure to use /report to keep the server safe!"));
                 }
             }
@@ -218,7 +218,7 @@ public class PunishmentManager implements Listener {
 
         if (!hideStaffMessage) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                if (players.hasPermission(PS.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                if (players.hasPermission(P.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEwarned &f" + target.getName() + " &#00CCDEfor &6(" + reason + ") " + (silent ? "&c(Silent)" : "")));
                 }
             }
@@ -297,7 +297,7 @@ public class PunishmentManager implements Listener {
                     }
                 } else {
                     players.sendMessage(CC.send("&cSaftey!"));
-                    players.sendMessage(CC.send("&bfA player just got banned!"));
+                    players.sendMessage(CC.send("&bfA player just got punished!"));
                     players.sendMessage(CC.send("&bfMake sure to use /report to keep the server safe!"));
                 }
             }
@@ -305,7 +305,7 @@ public class PunishmentManager implements Listener {
 
         if (!hideStaffMessage) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                if (players.hasPermission(PS.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                if (players.hasPermission(P.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEkicked &f" + target.getName() + " &#00CCDEfor &6(" + reason + ") " + (silent ? "&c(Silent)" : "")));
                 }
             }
@@ -440,7 +440,7 @@ public class PunishmentManager implements Listener {
 
         if (!hideStaffMessage) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                if (players.hasPermission(PS.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                if (players.hasPermission(P.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEunwarned " + target.getName() + "&#00CCDE for &6(" + reason + ") " + (silent ? "&c(Silent)" : "")));
                 }
             }
@@ -577,7 +577,7 @@ public class PunishmentManager implements Listener {
         }
 
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (onlinePlayer.hasPermission(PS.punish_notify_high)) {
+            if (onlinePlayer.hasPermission(P.punish_notify_high)) {
                 onlinePlayer.sendMessage(CC.sendBlue("[High Staff] &f" + player.getName() + " &#00CCDEhas cleared &f" + target.getName() + "'s &#00CCDEpunishment history"));
             }
         }
@@ -594,7 +594,7 @@ public class PunishmentManager implements Listener {
             long remainingTime = expirationTime - System.currentTimeMillis();
             timeLeftFormatted = TimeUtil.formatDuration(remainingTime);
         } else {
-            timeLeftFormatted = "Permanent";
+            timeLeftFormatted = "Never";
         }
 
         Punishment punishment = new Punishment(player,
@@ -665,7 +665,7 @@ public class PunishmentManager implements Listener {
                     }
                 } else {
                     players.sendMessage(CC.send("&cSaftey!"));
-                    players.sendMessage(CC.send("&bfA player just got banned!"));
+                    players.sendMessage(CC.send("&bfA player just got punished!"));
                     players.sendMessage(CC.send("&bfMake sure to use /report to keep the server safe!"));
                 }
             }
@@ -674,7 +674,7 @@ public class PunishmentManager implements Listener {
         String muteType = expirationTime > 0 ? "temporarily muted" : "muted";
         if (!hideStaffMessage) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                if (players.hasPermission(PS.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                if (players.hasPermission(P.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                     if (expirationTime > 0) {
                         players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDE" + muteType + " &f" + target.getName() + " &#00CCDEfor &6(" + reason + ") &#00CCDEfor &c(" + timeLeftFormatted + ") " + (silent ? "&c(Silent)" : "")));
                     } else {
@@ -936,7 +936,7 @@ public class PunishmentManager implements Listener {
 
         if (!hideStaffMessage) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                if (players.hasPermission(PS.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                if (players.hasPermission(P.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEunmuted " + target.getName() + "&#00CCDE for &6(" + reason + ") " + (silent ? "&c(Silent)" : "")));
                 }
             }
@@ -980,7 +980,7 @@ public class PunishmentManager implements Listener {
             long remainingTime = expirationTime - System.currentTimeMillis();
             timeLeftFormatted = TimeUtil.formatDuration(remainingTime);
         } else {
-            timeLeftFormatted = "Permanent";
+            timeLeftFormatted = "Never";
         }
         formattedReason = formattedReason.replace("%time_left%", timeLeftFormatted);
 
@@ -1033,7 +1033,7 @@ public class PunishmentManager implements Listener {
                 }
                 } else {
                     players.sendMessage(CC.send("&cSaftey!"));
-                    players.sendMessage(CC.send("&bfA player just got banned!"));
+                    players.sendMessage(CC.send("&bfA player just got punished!"));
                     players.sendMessage(CC.send("&bfMake sure to use /report to keep the server safe!"));
                 }
             }
@@ -1042,7 +1042,7 @@ public class PunishmentManager implements Listener {
         String banType = expirationTime > 0 ? "temporarily banned" : "banned";
         if (!hideStaffMessage) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                if (players.hasPermission(PS.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                if (players.hasPermission(P.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                     if (expirationTime > 0) {
                         players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDE" + banType + " &f" + target.getName() + " &#00CCDEfor &6(" + reason + ") &#00CCDEfor &c(" + timeLeftFormatted + ") " + (silent ? "&c(Silent)" : "")));
                     } else {
@@ -1254,7 +1254,7 @@ public class PunishmentManager implements Listener {
 
         if (!hideStaffMessage) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                if (players.hasPermission(PS.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                if (players.hasPermission(P.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                     players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEunbanned " + target.getName() + "&#00CCDE for &6(" + reason + ") " + (silent ? "&c(Silent)" : "")));
                 }
             }
@@ -1268,7 +1268,7 @@ public class PunishmentManager implements Listener {
     private void notifyHighStaff(CommandSender player, OfflinePlayer target, String reason, String action, boolean hideStaffMessage) {
         if (hideStaffMessage) {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                if (players.hasPermission(PS.punish_notify_high) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                if (players.hasPermission(P.punish_notify_high) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                     players.sendMessage(CC.sendBlue("[High Staff] &f" + player.getName() + " &#00CCDE" + action + " &f" + target.getName() + " &#00CCDEfor &6(" + reason + ")"));
                 }
             }
@@ -1305,7 +1305,7 @@ public class PunishmentManager implements Listener {
             formattedReason = formattedReason.replace("%id%", activeBans.get(0).ID());
             String timeLeftFormatted = remainingTime > 0 ?
                     TimeUtil.formatDuration(remainingTime) :
-                    "Permanent";
+                    "Never";
             formattedReason = formattedReason.replace("%time_left%", timeLeftFormatted);
             formattedReason = CC.translate(formattedReason);
 
@@ -1317,7 +1317,7 @@ public class PunishmentManager implements Listener {
                     long cooldown = 500;
 
                     for (Player players : Bukkit.getOnlinePlayers()) {
-                        if (players.hasPermission(PS.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
+                        if (players.hasPermission(P.punish_notify) && alertManager.hasAlertEnabled(players, Alert.STAFF)) {
                             long lastSent = lastMessageTime.getOrDefault(players, 0L);
 
                             if (currentTime - lastSent >= cooldown) {
@@ -1347,7 +1347,7 @@ public class PunishmentManager implements Listener {
                     long remainingTime = expirationTime - System.currentTimeMillis();
                     timeLeftFormatted = TimeUtil.formatDuration(remainingTime);
                 } else {
-                    timeLeftFormatted = "Permanent";
+                    timeLeftFormatted = "Never";
                 }
                 player.sendMessage(CC.send("&c================================"));
                 player.sendMessage(CC.send(""));
@@ -1375,7 +1375,7 @@ public class PunishmentManager implements Listener {
                     long remainingTime = expirationTime - System.currentTimeMillis();
                     timeLeftFormatted = TimeUtil.formatDuration(remainingTime);
                 } else {
-                    timeLeftFormatted = "Permanent";
+                    timeLeftFormatted = "Never";
                 }
                 event.setCancelled(true);
                 player.sendMessage(CC.send("&c================================"));
@@ -1395,13 +1395,18 @@ public class PunishmentManager implements Listener {
     @EventHandler
     public void onCMD(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        String command = event.getMessage().toLowerCase();
+        String command = event.getMessage().toLowerCase().trim();
 
+        if (command.startsWith("/")) {
+            command = command.substring(1);
+        }
 
         if (isPlayerMuted(player)) {
             List<String> blockedCMDS = plugin.getConfig().getStringList("punishments.blocked-cmds");
 
             for (String blockedCommand : blockedCMDS) {
+                blockedCommand = blockedCommand.toLowerCase().trim();
+
                 if (command.startsWith(blockedCommand)) {
                     event.setCancelled(true);
                     player.sendMessage(CC.sendRed("You are not allowed to use this command while muted!"));
@@ -1500,7 +1505,7 @@ public class PunishmentManager implements Listener {
         }
 
 
-        String permission = PS.punish + "." + permissionSuffix;
+        String permission = P.punish + "." + permissionSuffix;
         if (!sender.hasPermission(permission)) {
             sender.sendMessage(CC.send("&cYou don't have permission to issue this type of punishment."));
             return false;

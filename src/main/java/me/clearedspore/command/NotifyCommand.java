@@ -4,13 +4,13 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.notification.NotificationManager;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
 @CommandAlias("notify")
-@CommandPermission(PS.punish_notify_high)
+@CommandPermission(P.punish_notify_high)
 public class NotifyCommand extends BaseCommand {
 
     private final NotificationManager notificationManager;

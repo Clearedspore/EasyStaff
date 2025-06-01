@@ -6,14 +6,14 @@ import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.notification.NotificationManager;
 import me.clearedspore.feature.punishment.PunishmentManager;
 import me.clearedspore.feature.punishment.menu.history.HistoryMenu;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @CommandAlias("history|c|hist|checkhisotry|punishments|checkp")
-@CommandPermission(PS.history)
+@CommandPermission(P.history)
 public class HistoryCommand extends BaseCommand {
 
     private final JavaPlugin plugin;
@@ -38,7 +38,7 @@ public class HistoryCommand extends BaseCommand {
 
             OfflinePlayer target = Bukkit.getOfflinePlayer(targetName);
 
-            if(!player.hasPermission(PS.history_others)){
+            if(!player.hasPermission(P.history_others)){
                 player.sendMessage(CC.sendRed("You don't have permission to view other players their history"));
                 return;
             }

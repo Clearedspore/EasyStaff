@@ -3,12 +3,12 @@ package me.clearedspore.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.clearedspore.easyAPI.util.CC;
-import me.clearedspore.util.PS;
+import me.clearedspore.util.P;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-@CommandPermission(PS.teleport_others)
+@CommandPermission(P.teleport_others)
 @CommandAlias("tphere")
 public class StaffTphereCommand extends BaseCommand {
 
@@ -34,7 +34,7 @@ public class StaffTphereCommand extends BaseCommand {
         target.teleport(playerLocation);
         player.sendMessage(CC.sendBlue("Teleported " + target.getName() + " to yourself"));
         for(Player players : Bukkit.getOnlinePlayers()){
-            if(players.hasPermission(PS.notify)){
+            if(players.hasPermission(P.notify)){
                 players.sendMessage(CC.sendBlue("[Staff] &f" + player.getName() + " &#00CCDEteleported &f" + targetName + " &#00CCDEto themself"));
             }
         }

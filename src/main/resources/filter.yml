@@ -14,6 +14,7 @@ fuck:
     - "f*ck"
     - "f1ck"
     - "fk"
+    - "fuck"
   # If you want to punish the player for saying it
   punishment:
     enabled: false
@@ -41,6 +42,7 @@ niger:
     - "nigga"
     - "nogga"
     - "nigger"
+    - "niger"
   punishment:
     enabled: true
     command:
