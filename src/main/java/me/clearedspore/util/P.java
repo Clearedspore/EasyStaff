@@ -86,7 +86,9 @@ public class P {
     public static final String channel_list = "easystaff.channel.list";
     public static final String channel = "easystaff.channel";
 
-    
+    public static final String invsee = "easystaff.invsee";
+    public static final String invsee_admin = "easystaff.invsee.admin";
+
     public static final String staffmode = "easystaff.staffmode";
 
     public static final String whois = "easystaff.whois";

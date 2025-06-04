@@ -79,25 +79,52 @@ public class FilterManager implements Listener {
     }
 
     public String replaceFilteredWords(String message) {
-        String normalizedMessage = normalizeMessage(message);
-        for (String word : getAllFilteredWords()) {
-            List<String> variations = filterConfig.getStringList(word + ".variations");
-            for (String variation : variations) {
-                if (filterConfig.getBoolean(word + ".replacement.enabled")) {
-                    String replacement = filterConfig.getString(word + ".replacement.replace", "****");
-                    String normalizedVariation = normalizeMessage(variation);
-                    String pattern = "(?i)" + String.join("[^a-zA-Z]*", normalizedVariation.split(""));
-                    if (normalizedMessage.contains(normalizedVariation)) {
-                        message = message.replaceAll(pattern, replacement);
+        for (String configWord : filterConfig.getKeys(false)) {
+            if (configWord.equals("enabled")) {
+                continue;
+            }
+            
+            if (filterConfig.getBoolean(configWord + ".replacement.enabled")) {
+                String replacement = filterConfig.getString(configWord + ".replacement.replace", "****");
+
+                if (containsWholeWord(message, configWord)) {
+                    message = replaceWholeWord(message, configWord, replacement);
+                }
+
+                List<String> variations = filterConfig.getStringList(configWord + ".variations");
+                for (String variation : variations) {
+                    if (containsWholeWord(message, variation)) {
+                        message = replaceWholeWord(message, variation, replacement);
                     }
                 }
             }
         }
         return message;
     }
+    
+
+    private String replaceWholeWord(String message, String word, String replacement) {
+        return message.replaceAll("\\b" + word + "\\b", replacement);
+    }
 
     private String normalizeMessage(String message) {
         return message.replaceAll("[^a-zA-Z]", "").toLowerCase();
+    }
+    
+
+    private boolean containsWholeWord(String message, String word) {
+        String lowerMessage = message.toLowerCase();
+        String lowerWord = word.toLowerCase();
+
+        String[] words = lowerMessage.split("\\s+|[^a-zA-Z0-9]");
+        
+        for (String w : words) {
+            if (w.equals(lowerWord)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     @EventHandler
@@ -118,18 +145,14 @@ public class FilterManager implements Listener {
                 continue;
             }
 
-            String normalizedConfigWord = normalizeMessage(configWord);
-            boolean wordFound = normalizedMessage.contains(normalizedConfigWord) && 
-                               message.toLowerCase().contains(configWord.toLowerCase());
+            boolean wordFound = containsWholeWord(message, configWord);
 
             List<String> variations = filterConfig.getStringList(configWord + ".variations");
             boolean variationFound = false;
             String foundVariation = "";
             
             for (String variation : variations) {
-                String normalizedVariation = normalizeMessage(variation);
-                if (normalizedMessage.contains(normalizedVariation) && 
-                    message.toLowerCase().contains(variation.toLowerCase())) {
+                if (containsWholeWord(message, variation)) {
                     variationFound = true;
                     foundVariation = variation;
                     break;

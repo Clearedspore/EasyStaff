@@ -13,6 +13,8 @@ import me.clearedspore.command.channel.DynamicCommandRegister;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.alertManager.Alert;
 import me.clearedspore.feature.channels.DiscordChannelInfo;
+import me.clearedspore.feature.discord.DiscordManager;
+import me.clearedspore.feature.invsee.InvseeManager;
 import me.clearedspore.feature.notification.NotificationManager;
 import me.clearedspore.feature.punishment.HiddenPunishmentManager;
 import me.clearedspore.feature.setting.settings.StaffNotfySetting;
@@ -89,6 +91,7 @@ public final class EasyStaff extends JavaPlugin {
     private DiscordChannelInfo discordChannelInfo;
     private NotificationManager notificationManager;
     private HiddenPunishmentManager hiddenPunishmentManager;
+    private InvseeManager invseeManager;
 
     @Override
     public void onEnable() {
@@ -116,7 +119,7 @@ public final class EasyStaff extends JavaPlugin {
 
         this.punishmentManager = new PunishmentManager(playerData, reasonsConfig, this, alertManager);
         this.filterManager = new FilterManager(filterConfig, this, punishmentManager, logger, alertManager);
-        this.discordManager = new me.clearedspore.feature.discord.DiscordManager(this, logger, playerData, punishmentManager);
+        this.discordManager = new DiscordManager(this, logger, playerData, punishmentManager);
         this.reportManager = new ReportManager(logger, this, alertManager);
         this.maintenanceManager = new MaintenanceManager(this, playerData);
         this.serverPingManager = new ServerPingManager(this);
@@ -133,6 +136,7 @@ public final class EasyStaff extends JavaPlugin {
         this.chatInputHandler = new ChatInputHandler(this);
 
         this.notificationManager = new NotificationManager(this);
+        this.invseeManager = new InvseeManager(this);
 
 
         if (Bukkit.getPluginManager().getPlugin("TAB") != null) {
@@ -247,6 +251,8 @@ public final class EasyStaff extends JavaPlugin {
                 commandManager.registerCommand(new me.clearedspore.command.discord.StaffUnlinkCommand(discordManager, this));
                 commandManager.registerCommand(new me.clearedspore.command.discord.VerifyCommand(discordManager));
             }
+
+            commandManager.registerCommand(new InvseeCommand(invseeManager));
 
             logger.info("Commands registered");
         } catch (Exception e){
@@ -413,6 +419,10 @@ public final class EasyStaff extends JavaPlugin {
     
     public StaffModeManager getStaffModeManager() {
         return staffModeManager;
+    }
+
+    public InvseeManager getInvseeManager(){
+        return invseeManager;
     }
     
     public me.clearedspore.feature.discord.DiscordManager getDiscordManager() {

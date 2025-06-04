@@ -5,6 +5,7 @@
 
 discord:
   # Enable Discord integration
+  # Requires a reboot!
   enabled: false
   
   # Discord webhook URLs for different notifications

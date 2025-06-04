@@ -107,13 +107,15 @@ public class StaffModeManager implements Listener {
 
         if (mode != null) {
             Action action = event.getAction();
+            ItemStack item = player.getInventory().getItemInMainHand();
+
             event.setCancelled(true);
 
-            if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-                ItemStack item = player.getInventory().getItemInMainHand();
-                if (item != null && itemManager.isStaffItem(item)) {
-                    event.setCancelled(false);
+            if (item != null && itemManager.isStaffItem(item)) {
+                if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
                 }
+            } else if (mode.isInventory()) {
+                event.setCancelled(false);
             }
         }
     }
@@ -426,11 +428,6 @@ public class StaffModeManager implements Listener {
         StaffMode mode = getPlayerStaffMode(player);
         
         if (mode != null) {
-            // Always cancel the sound by setting the block break sound to null
-            // This is done by setting a custom sound category for the block break event
-            // which is a feature in newer versions of Bukkit/Spigot
-            
-            // Cancel the event if block breaking is not allowed in this staff mode
             if (!mode.isBlockBreak()) {
                 event.setCancelled(true);
             }
@@ -443,10 +440,6 @@ public class StaffModeManager implements Listener {
         StaffMode mode = getPlayerStaffMode(player);
         
         if (mode != null) {
-            // Always cancel the sound for block placement
-            // The actual sound cancellation is handled by the packet listener
-            
-            // Cancel the event if block placing is not allowed in this staff mode
             if (!mode.isBlockPlace()) {
                 event.setCancelled(true);
             }
@@ -527,10 +520,7 @@ public class StaffModeManager implements Listener {
         Player player = event.getPlayer();
         
         if (isInStaffMode(player)) {
-            // Cancel the event to prevent sound generation
             event.setCancelled(true);
-            
-            // But still handle staff item usage
             ItemStack item = player.getInventory().getItemInMainHand();
             if (itemManager.isStaffItem(item)) {
                 itemManager.handleItemUse(player, event.getRightClicked(), item);
@@ -538,21 +528,15 @@ public class StaffModeManager implements Listener {
         }
     }
     
-    /**
-     * Prevents players in staff mode from making sounds when moving
-     */
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (isInStaffMode(player)) {
-            // We don't cancel the event as that would prevent movement
-            // The sound prevention is handled by the packet listeners
         }
     }
     
-    /**
-     * Prevents players in staff mode from making sounds when swinging their arm
-     */
+
     @EventHandler
     public void onPlayerAnimation(PlayerAnimationEvent event) {
         Player player = event.getPlayer();
@@ -561,9 +545,7 @@ public class StaffModeManager implements Listener {
         }
     }
     
-    /**
-     * Prevents players in staff mode from making sounds when using items
-     */
+
     @EventHandler
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();

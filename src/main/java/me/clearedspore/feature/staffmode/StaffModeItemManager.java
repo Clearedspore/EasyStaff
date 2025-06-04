@@ -2,6 +2,7 @@ package me.clearedspore.feature.staffmode;
 
 import me.clearedspore.EasyStaff;
 import me.clearedspore.easyAPI.util.CC;
+import me.clearedspore.feature.invsee.InvseeManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import javax.xml.stream.events.StartDocument;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +50,24 @@ public class StaffModeItemManager implements Listener {
         ItemStack worldEditItem = createItem(Material.WOODEN_AXE, "&aWorldEdit Wand", "&7Use for WorldEdit selections");
         items.put("worldedit", worldEditItem);
 
+        ItemStack punishItem = createItem(Material.IRON_AXE, "&aPunish player", "&7Right click a player to punish them");
+        items.put("punish", punishItem);
+
+        ItemStack invsee = createItem(Material.BOOK, "&aInspect Player", "&7right click to view a players inventory");
+        items.put("invsee", invsee);
+
+        ItemStack randomTeleportItem = createItem(Material.ENDER_PEARL, "&aRandom Teleport", "&7Right-click to teleport to a random player");
+        items.put("randomteleport", randomTeleportItem);
+
+        itemHandlers.put("invsee", (player, target) -> {
+           if(target instanceof Player){
+               Player targetPlayer = (Player) target;
+
+               InvseeManager invseeManager = EasyStaff.getInstance().getInvseeManager();
+               invseeManager.openInventory(player, targetPlayer);
+           }
+        });
+
         itemHandlers.put("freeze", (player, target) -> {
             if (target instanceof Player) {
                 Player targetPlayer = (Player) target;
@@ -61,9 +81,34 @@ public class StaffModeItemManager implements Listener {
                 }
             }
         });
+
+        itemHandlers.put("punish", (player, target) -> {
+            if(target instanceof Player){
+                Player targetPlayer = (Player) target;
+                player.performCommand("punish " + targetPlayer.getName());
+            }
+        });
         
         itemHandlers.put("vanish", (player, target) -> {
             player.performCommand("vanish");
+        });
+        
+        itemHandlers.put("randomteleport", (player, target) -> {
+            Player[] onlinePlayers = Bukkit.getOnlinePlayers().toArray(new Player[0]);
+            if (onlinePlayers.length > 1) {
+                Player randomPlayer;
+                do {
+                    randomPlayer = onlinePlayers[(int) (Math.random() * onlinePlayers.length)];
+                } while (randomPlayer.equals(player));
+
+                player.performCommand("tp " + randomPlayer.getName());
+                player.sendMessage(CC.sendGreen("Teleported to " + randomPlayer.getName() + "!"));
+            } else {
+                player.sendMessage(CC.sendRed("No other players online to teleport to!"));
+            }
+        });
+        
+        itemHandlers.put("compass", (player, target) -> {
         });
     }
     
@@ -145,7 +190,8 @@ public class StaffModeItemManager implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
 
-        if (item != null) {
+        if (item != null && isStaffItem(item)) {
+            event.setCancelled(true);
             if (item.getType() == Material.COMPASS && isSimilar(item, items.get("compass"))) {
                 Location currentLocation = player.getLocation();
                 float yaw = currentLocation.getYaw();
@@ -168,10 +214,16 @@ public class StaffModeItemManager implements Listener {
 
                 Location newLocation = new Location(currentLocation.getWorld(), x, y, z, yaw, pitch);
                 player.teleport(newLocation);
-                event.setCancelled(true);
-            } else if (item.getType() == Material.ENDER_EYE && isSimilar(item, items.get("vanish"))) {
-                event.setCancelled(true);
-                player.performCommand("vanish");
+            } else if (event.getAction().isRightClick()) {
+                for (Map.Entry<String, ItemStack> entry : items.entrySet()) {
+                    if (isSimilar(item, entry.getValue())) {
+                        BiConsumer<Player, Entity> handler = itemHandlers.get(entry.getKey());
+                        if (handler != null) {
+                            handler.accept(player, null);
+                        }
+                        break;
+                    }
+                }
             }
         }
     }

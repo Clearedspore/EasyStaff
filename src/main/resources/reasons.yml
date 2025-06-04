@@ -97,75 +97,75 @@ punishmentnotify:
 #     reason: "Advertising (scam)"
 
 offenses:
-    Cheating:
-      1:
-        type: WARN
-      2:
-        type: BAN
-        duration: 7d
-        reason: "Cheating (2nd offense)"
-      3:
-        type: BAN
-        duration: 14d
-        reason: "Cheating (3rd offense)"
-      final:
-        type: BAN
-        duration: 30d
-        reason: "Cheating (Final warning)"
-    Toxicity:
-      1:
-        type: WARN
-      2:
-        type: MUTE
-        duration: 1h
-        reason: "Toxicity (2nd offense)"
-      3:
-        type: MUTE
-        duration: 12h
-        reason: "Toxicity (3rd offense)"
-      4:
-        type: MUTE
-        duration: 1d
-        reason: "Toxicity (4th offense)"
-      5:
-        type: MUTE
-        duration: 1d
-        reason: "Toxicity (5th offense)"
-      final:
-        type: MUTE
-        duration: 7d
-        reason: "Toxicity (Final warning)"
-    Advertising:
-      1:
-        type: WARN
-      2:
-        type: MUTE
-        duration: 1d
-      3:
-        type: BAN
-        duration: 3d
-      final:
-        type: BAN
-        duration: permanent
-    Discrimination:
-      1:
-        type: MUTE
-        duration: 7d
-      2:
-        type: MUTE
-        duration: 14d
-      3:
-        type: MUTE
-        duration: 30d
-      4:
-        type: MUTE
-        duration: 60d
-      5:
-        type: MUTE
-        duration: 120d
-      6:
-        type: MUTE
-        duration: 1y
-      final:
-        type: mute
-        duration: permanent
+  Cheating:
+    1:
+      type: WARN
+    2:
+      type: BAN
+      duration: 7d
+      reason: "Cheating (2nd offense)"
+    3:
+      type: BAN
+      duration: 14d
+      reason: "Cheating (3rd offense)"
+    final:
+      type: BAN
+      duration: 30d
+      reason: "Cheating (Final warning)"
+  Toxicity:
+    1:
+      type: WARN
+    2:
+      type: MUTE
+      duration: 1h
+      reason: "Toxicity (2nd offense)"
+    3:
+      type: MUTE
+      duration: 12h
+      reason: "Toxicity (3rd offense)"
+    4:
+      type: MUTE
+      duration: 1d
+      reason: "Toxicity (4th offense)"
+    5:
+      type: MUTE
+      duration: 1d
+      reason: "Toxicity (5th offense)"
+    final:
+      type: MUTE
+      duration: 7d
+      reason: "Toxicity (Final warning)"
+  Advertising:
+    1:
+      type: WARN
+    2:
+      type: MUTE
+      duration: 1d
+    3:
+      type: BAN
+      duration: 3d
+    final:
+      type: BAN
+      duration: permanent
+  Discrimination:
+    1:
+      type: MUTE
+      duration: 7d
+    2:
+      type: MUTE
+      duration: 14d
+    3:
+      type: MUTE
+      duration: 30d
+    4:
+      type: MUTE
+      duration: 60d
+    5:
+      type: MUTE
+      duration: 120d
+    6:
+      type: MUTE
+      duration: 1y
+    final:
+      type: mute
+      duration: permanent
