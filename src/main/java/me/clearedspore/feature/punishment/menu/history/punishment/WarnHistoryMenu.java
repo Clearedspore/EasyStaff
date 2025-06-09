@@ -4,7 +4,7 @@ import me.clearedspore.easyAPI.menu.PaginatedMenu;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.punishment.Punishment;
 import me.clearedspore.feature.punishment.PunishmentManager;
-import me.clearedspore.feature.punishment.menu.history.item.MenuItem;
+import me.clearedspore.feature.punishment.menu.history.item.*;
 import me.clearedspore.feature.punishment.menu.history.warnmenu.RemoveWarnMenu;
 import me.clearedspore.util.P;
 import org.bukkit.Material;
@@ -44,11 +44,16 @@ public class WarnHistoryMenu extends PaginatedMenu {
 
     @Override
     public int getRows() {
-        return 4;
+        return 6;
     }
 
     @Override
     public void createItems() {
+        setGlobalMenuItem(3, 1, new BanItem(target, viewer, plugin, punishmentManager));
+        setGlobalMenuItem(4, 1, new MenuItem(plugin, viewer, target, punishmentManager));
+        setGlobalMenuItem(5, 1, new MuteItem(target, viewer, plugin, punishmentManager));
+        setGlobalMenuItem(6, 1, new KickItem(target, viewer, plugin, punishmentManager));
+        setGlobalMenuItem(7, 1, new StatsItem(target, viewer, plugin , punishmentManager));
         List<Punishment> warns = punishmentManager.getAllWarns(target);
 
         if (warns.isEmpty()) {
@@ -91,9 +96,9 @@ public class WarnHistoryMenu extends PaginatedMenu {
                         lore.add("");
                         if (viewer.hasPermission(P.unwarn)) {
                             if (!target.equals(viewer)) {
-                                lore.add(CC.sendWhite("Click to remove the warning"));
+                                lore.add(CC.sendGreen("» Click to remove warning " + punishments.ID()));
                             } else if (plugin.getConfig().getBoolean("punishments.remove-own") || viewer.hasPermission(P.removeown_bypass)) {
-                                lore.add(CC.sendWhite("Click to remove your own warning"));
+                                lore.add(CC.sendGreen("» Click to remove your own warning"));
                             } else {
                                 lore.add(CC.sendRed("You can't remove your own punishment!"));
                             }
@@ -136,7 +141,6 @@ public class WarnHistoryMenu extends PaginatedMenu {
                 }
 
                 if (viewer.hasPermission(P.punishments_hide)) {
-                    lore.add("");
                     if (isPunishmentHidden) {
                         lore.add(CC.sendRed("» Right-click to show this punishment"));
                     } else {
@@ -149,8 +153,6 @@ public class WarnHistoryMenu extends PaginatedMenu {
                 addItem(item);
             }
         }
-
-        setGlobalMenuItem(5, 1, new MenuItem(plugin, viewer, target, punishmentManager));
     }
 
     @Override

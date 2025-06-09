@@ -1,38 +1,55 @@
 package me.clearedspore.feature.staffmode;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import me.clearedspore.EasyStaff;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.invsee.InvseeManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
-import javax.xml.stream.events.StartDocument;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 public class StaffModeItemManager implements Listener {
     private final EasyStaff plugin;
     private final Map<String, ItemStack> items;
     private final Map<String, BiConsumer<Player, Entity>> itemHandlers;
-    private final Map<Player, Long> freezeCooldowns;
+    private final Map<Player, Long> Cooldowns;
     private static final long COOLDOWN_TICKS = 10L;
+
+    private final Map<UUID, Set<UUID>> glowingPlayers = new HashMap<>();
+    private static final String GLOW_TEAM_PREFIX = "glow_";
 
     public StaffModeItemManager(EasyStaff plugin) {
         this.plugin = plugin;
         this.items = new HashMap<>();
         this.itemHandlers = new HashMap<>();
-        this.freezeCooldowns = new HashMap<>();
+        this.Cooldowns = new HashMap<>();
 
         registerDefaultItems();
     }
@@ -58,6 +75,9 @@ public class StaffModeItemManager implements Listener {
 
         ItemStack randomTeleportItem = createItem(Material.ENDER_PEARL, "&aRandom Teleport", "&7Right-click to teleport to a random player");
         items.put("randomteleport", randomTeleportItem);
+        
+//        ItemStack glowItem = createItem(Material.GLOWSTONE_DUST, "&aGlow Player", "&7Right-click a player to make them glow blue" + "\n&7Left-click to remove glow from all players");
+//        items.put("glow", glowItem);
 
         itemHandlers.put("invsee", (player, target) -> {
            if(target instanceof Player){
@@ -73,11 +93,11 @@ public class StaffModeItemManager implements Listener {
                 Player targetPlayer = (Player) target;
 
                 long currentTime = System.currentTimeMillis();
-                long lastUsed = freezeCooldowns.getOrDefault(player, 0L);
+                long lastUsed = Cooldowns.getOrDefault(player, 0L);
 
                 if (currentTime - lastUsed >= COOLDOWN_TICKS * 50) {
                     player.performCommand("freeze " + targetPlayer.getName());
-                    freezeCooldowns.put(player, currentTime);
+                    Cooldowns.put(player, currentTime);
                 }
             }
         });
@@ -110,6 +130,130 @@ public class StaffModeItemManager implements Listener {
         
         itemHandlers.put("compass", (player, target) -> {
         });
+        
+        itemHandlers.put("glow", (player, target) -> {
+            if (target instanceof Player) {
+                long currentTime = System.currentTimeMillis();
+                long lastUsed = Cooldowns.getOrDefault(player, 0L);
+                Player targetPlayer = (Player) target;
+                if (currentTime - lastUsed >= COOLDOWN_TICKS * 50) {
+                    togglePlayerGlow(player, targetPlayer);
+                }
+            }
+        });
+    }
+
+    private void togglePlayerGlow(Player staff, Player target) {
+        UUID staffUUID = staff.getUniqueId();
+        UUID targetUUID = target.getUniqueId();
+
+        Set<UUID> glowingForStaff = glowingPlayers.computeIfAbsent(staffUUID, k -> new HashSet<>());
+
+        if (glowingForStaff.contains(targetUUID)) {
+            removeGlow(staff, target);
+            glowingForStaff.remove(targetUUID);
+            staff.sendMessage(CC.sendGreen("Removed glow from " + target.getName()));
+        } else {
+            applyGlow(staff, target);
+            glowingForStaff.add(targetUUID);
+            staff.sendMessage(CC.sendGreen("Applied blue glow to " + target.getName()));
+        }
+    }
+
+    private void applyGlow(Player staff, Player target) {
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+
+        Scoreboard scoreboard;
+        if (staff.getScoreboard() == Bukkit.getScoreboardManager().getMainScoreboard()) {
+            scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+            staff.setScoreboard(scoreboard);
+        } else {
+            scoreboard = staff.getScoreboard();
+        }
+
+        String teamName = GLOW_TEAM_PREFIX + staff.getUniqueId().toString().substring(0, 8);
+
+        Team team = scoreboard.getTeam(teamName);
+        if (team == null) {
+            team = scoreboard.registerNewTeam(teamName);
+            team.setColor(ChatColor.BLUE);
+        }
+
+        team.addEntry(target.getName());
+
+        sendGlowPacket(staff, target, true);
+    }
+
+    private void removeGlow(Player staff, Player target) {
+        Scoreboard scoreboard = staff.getScoreboard();
+
+        String teamName = GLOW_TEAM_PREFIX + staff.getUniqueId().toString().substring(0, 8);
+        Team team = scoreboard.getTeam(teamName);
+        
+        if (team != null) {
+            team.removeEntry(target.getName());
+        }
+
+        sendGlowPacket(staff, target, false);
+    }
+
+    private void sendGlowPacket(Player observer, Player target, boolean glowing) {
+        try {
+            ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+
+            PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+
+            packet.getIntegers().write(0, target.getEntityId());
+
+            WrappedDataWatcher watcher = new WrappedDataWatcher();
+
+            WrappedDataWatcher.Serializer byteSerializer = WrappedDataWatcher.Registry.get(Byte.class);
+
+            WrappedDataWatcher targetWatcher = WrappedDataWatcher.getEntityWatcher(target);
+            byte entityFlags = 0;
+
+            if (targetWatcher.hasIndex(0)) {
+                try {
+                    entityFlags = targetWatcher.getByte(0);
+                } catch (Exception e) {
+                    entityFlags = 0;
+                }
+            }
+            
+
+            if (glowing) {
+                entityFlags |= 0x40;
+            } else {
+                entityFlags &= ~0x40;
+            }
+
+            watcher.setObject(0, byteSerializer, entityFlags);
+
+            packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+
+            protocolManager.sendServerPacket(observer, packet);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeAllGlows(Player staff) {
+        UUID staffUUID = staff.getUniqueId();
+        Set<UUID> glowingForStaff = glowingPlayers.get(staffUUID);
+        
+        if (glowingForStaff != null && !glowingForStaff.isEmpty()) {
+            Set<UUID> glowingCopy = new HashSet<>(glowingForStaff);
+            
+            for (UUID targetUUID : glowingCopy) {
+                Player target = Bukkit.getPlayer(targetUUID);
+                if (target != null && target.isOnline()) {
+                    removeGlow(staff, target);
+                }
+            }
+            
+            glowingForStaff.clear();
+            staff.sendMessage(CC.sendGreen("Removed glow from all players"));
+        }
     }
     
     private ItemStack createItem(Material material, String name, String... lore) {
@@ -214,6 +358,20 @@ public class StaffModeItemManager implements Listener {
 
                 Location newLocation = new Location(currentLocation.getWorld(), x, y, z, yaw, pitch);
                 player.teleport(newLocation);
+            } else if (item.getType() == Material.GLOWSTONE_DUST && isSimilar(item, items.get("glow"))) {
+                if (event.getAction().isLeftClick()) {
+                    removeAllGlows(player);
+                } else if (event.getAction().isRightClick()) {
+                    for (Map.Entry<String, ItemStack> entry : items.entrySet()) {
+                        if (isSimilar(item, entry.getValue())) {
+                            BiConsumer<Player, Entity> handler = itemHandlers.get(entry.getKey());
+                            if (handler != null) {
+                                handler.accept(player, null);
+                            }
+                            break;
+                        }
+                    }
+                }
             } else if (event.getAction().isRightClick()) {
                 for (Map.Entry<String, ItemStack> entry : items.entrySet()) {
                     if (isSimilar(item, entry.getValue())) {
@@ -228,4 +386,48 @@ public class StaffModeItemManager implements Listener {
         }
     }
 
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+
+        if (glowingPlayers.containsKey(playerUUID)) {
+
+            glowingPlayers.remove(playerUUID);
+        }
+
+        for (Map.Entry<UUID, Set<UUID>> entry : glowingPlayers.entrySet()) {
+            if (entry.getValue().contains(playerUUID)) {
+                Player staff = Bukkit.getPlayer(entry.getKey());
+                if (staff != null && staff.isOnline()) {
+                    Scoreboard scoreboard = staff.getScoreboard();
+                    String teamName = GLOW_TEAM_PREFIX + staff.getUniqueId().toString().substring(0, 8);
+                    Team team = scoreboard.getTeam(teamName);
+                    if (team != null) {
+                        team.removeEntry(player.getName());
+                    }
+                }
+                entry.getValue().remove(playerUUID);
+            }
+        }
+    }
+    
+
+
+    public void onStaffModeExit(Player player) {
+        removeAllGlows(player);
+        glowingPlayers.remove(player.getUniqueId());
+
+        Scoreboard scoreboard = player.getScoreboard();
+        String teamName = GLOW_TEAM_PREFIX + player.getUniqueId().toString().substring(0, 8);
+        Team team = scoreboard.getTeam(teamName);
+        if (team != null) {
+            team.unregister();
+        }
+        
+        if (scoreboard != Bukkit.getScoreboardManager().getMainScoreboard()) {
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        }
+    }
 }

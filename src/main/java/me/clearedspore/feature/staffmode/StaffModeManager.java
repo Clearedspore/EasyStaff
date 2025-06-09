@@ -239,6 +239,8 @@ public class StaffModeManager implements Listener {
             player.sendMessage(CC.sendBlue("Your vanish has been disabled."));
         }
 
+        itemManager.onStaffModeExit(player);
+
 
         StaffModeState state = playerStates.get(player.getUniqueId());
         if (state != null) {

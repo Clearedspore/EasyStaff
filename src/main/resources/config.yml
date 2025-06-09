@@ -1,7 +1,16 @@
 # EasyStaff Configuration
 # You can use color codes such as &7 or &f or even RGB
 # Make sure to check the wiki for more info
-# ->  <-
+# ->https://spore-plugins.gitbook.io/easystaff<-
+
+# Update checker settings
+update:
+  # Enable or disable the update checker
+  enabled: true
+  # Check for updates on startup
+  check-on-startup: true
+  # Notify admins when they join if an update is available
+  notify-on-join: true
 
 discord:
   # Enable Discord integration

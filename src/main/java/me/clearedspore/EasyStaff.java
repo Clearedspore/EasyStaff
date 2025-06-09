@@ -41,6 +41,7 @@ import me.clearedspore.util.ChatInputHandler;
 import me.clearedspore.manager.MaintenanceManager;
 import me.clearedspore.util.P;
 import me.clearedspore.util.ServerPingManager;
+import me.clearedspore.util.update.UpdateChecker;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.nametag.NameTagManager;
 import me.neznamy.tab.api.tablist.TabListFormatManager;
@@ -92,6 +93,7 @@ public final class EasyStaff extends JavaPlugin {
     private NotificationManager notificationManager;
     private HiddenPunishmentManager hiddenPunishmentManager;
     private InvseeManager invseeManager;
+    private UpdateChecker updateChecker;
 
     @Override
     public void onEnable() {
@@ -161,16 +163,15 @@ public final class EasyStaff extends JavaPlugin {
             logger.error("The vanish and staffmode feature will not be enabled!");
         }
 
-        RegisteredServiceProvider<LuckPerms> provider = getServer().getServicesManager().getRegistration(LuckPerms.class);
-        if (provider != null) {
-            luckperms = provider.getProvider();
-        }
-
-        if (luckperms != null && vanishManager != null) {
+        if (luckperms != null && vanishManager != null && Bukkit.getPluginManager().isPluginEnabled("Luckperms")) {
+            RegisteredServiceProvider<LuckPerms> provider = getServer().getServicesManager().getRegistration(LuckPerms.class);
+            if (provider != null) {
+                luckperms = provider.getProvider();
+            }
             ContextManager contextManager = luckperms.getContextManager();
             contextManager.registerCalculator(new VanishContext(vanishManager));
             contextManager.registerCalculator(new StaffModeContext(staffModeManager));
-        } else if (luckperms != null) {
+        } else if (luckperms != null && Bukkit.getPluginManager().isPluginEnabled("Luckperms")) {
             logger.warn("Not registering VanishContext because vanishManager is null");
         }
 
@@ -183,6 +184,13 @@ public final class EasyStaff extends JavaPlugin {
             logger.error(e.getMessage());
         }
 
+        if (getConfig().getBoolean("update.enabled", true)) {
+            this.updateChecker = new UpdateChecker(this, logger);
+
+            if (getConfig().getBoolean("update.check-on-startup", true)) {
+                updateChecker.checkForUpdates();
+            }
+        }
 
         registerPlaceholders();
         loadDefaultFiles();
@@ -193,6 +201,8 @@ public final class EasyStaff extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockNameCommand(this, reasonsConfig, alertManager), this);
         registerCommands();
         registerListeners();
+
+
         logger.info("Plugin enabled");
     }
 
@@ -218,7 +228,7 @@ public final class EasyStaff extends JavaPlugin {
             commandManager.registerCommand(new UnMuteCommand(punishmentManager, this));
             commandManager.registerCommand(new HistoryCommand(this, punishmentManager, notificationManager));
             commandManager.registerCommand(new WarnCommand(punishmentManager));
-            commandManager.registerCommand(new EasyStaffCommand(punishmentManager, staffModeManager, filterManager, this));
+            commandManager.registerCommand(new EasyStaffCommand(punishmentManager, staffModeManager, filterManager, this, updateChecker, playerData));
             commandManager.registerCommand(new AltsCommand(playerData, punishmentManager));
             commandManager.registerCommand(new StaffSettingsCommand(settingsManager, this));
             commandManager.registerCommand(new PunishCommand(punishmentManager, this));

@@ -15,6 +15,12 @@ public class P {
     public static final String exempt_add = "easystaff.exempt.add";
     public static final String exempt_remove = "easystaff.exempt.remove";
     public static final String clear_history = "easystaff.punishments.history.clear";
+    public static final String update_notify = "easystaff.update.notify";
+    public static final String version = "easystaff.version";
+
+    public static final String playerdata_generate = "easystaff.playerdata.generate";
+    public static final String playerdata_reset = "easystaff.playerdata.reset";
+
 
     public static final String freeze = "easystaff.freeze";
     public static final String freeze_notify = "easystaff.freeze.notify";

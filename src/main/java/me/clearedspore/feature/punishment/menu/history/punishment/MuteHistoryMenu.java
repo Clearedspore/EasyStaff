@@ -4,7 +4,7 @@ import me.clearedspore.easyAPI.menu.PaginatedMenu;
 import me.clearedspore.easyAPI.util.CC;
 import me.clearedspore.feature.punishment.Punishment;
 import me.clearedspore.feature.punishment.PunishmentManager;
-import me.clearedspore.feature.punishment.menu.history.item.MenuItem;
+import me.clearedspore.feature.punishment.menu.history.item.*;
 import me.clearedspore.util.P;
 import me.clearedspore.util.TimeUtil;
 import org.bukkit.Material;
@@ -44,11 +44,16 @@ public class MuteHistoryMenu extends PaginatedMenu {
 
     @Override
     public int getRows() {
-        return 4;
+        return 6;
     }
 
     @Override
     public void createItems() {
+        setGlobalMenuItem(3, 1, new BanItem(target, viewer, plugin, punishmentManager));
+        setGlobalMenuItem(4, 1, new WarnItem(target, viewer, plugin, punishmentManager));
+        setGlobalMenuItem(5, 1, new MenuItem(plugin, viewer, target, punishmentManager));
+        setGlobalMenuItem(6, 1, new KickItem(target, viewer, plugin, punishmentManager));
+        setGlobalMenuItem(7, 1, new StatsItem(target, viewer, plugin , punishmentManager));
         List<Punishment> mutes = punishmentManager.getAllMutes(target);
 
         if (mutes.isEmpty()) {
@@ -131,8 +136,6 @@ public class MuteHistoryMenu extends PaginatedMenu {
                 addItem(item);
             }
         }
-
-        setGlobalMenuItem(5, 1, new MenuItem(plugin, viewer, target, punishmentManager));
     }
 
     @Override
